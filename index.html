@@ -1,0 +1,1054 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DopaminemaXXing</title>
+<meta name="description" content="DopaminemaXXing: un incremental de mesa. Ruleta, dados, pesca y un ejército que pelea solo. Gratis en el navegador.">
+<meta property="og:title" content="DopaminemaXXing">
+<meta property="og:description" content="Un incremental de mesa. Jugalo gratis en itch.io.">
+<meta property="og:image" content="assets/logo.png">
+<link rel="icon" href="assets/dopamina.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+html{scroll-behavior:smooth}
+body{margin:0;background:#efe6d4}
+a{color:#c4470f}a:hover{color:#8f3209}
+.stripes-h{background-image:linear-gradient(180deg,#c8231a 0 25%,#e8641e 25% 50%,#f2b134 50% 75%,#2e8f8a 75% 100%)}
+.scan{background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0 1px,transparent 1px 3px)}
+.paper{background-image:url(assets/papel.png);background-size:512px 512px;opacity:.8}
+/* animaciones */
+.press{transition:transform .12s ease,box-shadow .12s ease}
+.press:hover{transform:translateY(3px);box-shadow:0 3px 0 #1d1b1a !important}
+.press:active{transform:translateY(6px);box-shadow:0 0 0 #1d1b1a !important}
+.press-light:hover{box-shadow:0 3px 0 #efe6d4 !important}.press-light:active{box-shadow:0 0 0 #efe6d4 !important}
+.press-mini:hover{transform:translateY(2px);box-shadow:0 2px 0 #1d1b1a !important}.press-mini:active{transform:translateY(4px);box-shadow:0 0 0 #1d1b1a !important}
+.press-cream:hover{box-shadow:0 2px 0 #8a8070 !important}.press-cream:active{box-shadow:0 0 0 #8a8070 !important}
+.navbtn{transition:background .15s,color .15s}.navbtn:hover{background:#e8641e !important;color:#1d1b1a !important}
+.tilt{transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+li:hover .tilt{transform:rotate(0deg) scale(1.04) !important}
+.lift{transition:transform .3s ease}.lift:hover{transform:translateY(-8px)}
+.reveal{transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
+.reveal.pre{opacity:0;transform:translateY(56px)}
+.hero-flow{animation:dmxflow 1.3s linear infinite}
+.drop{animation:dmxdrop 1.3s cubic-bezier(.55,0,.35,1) 1.6s both}
+@keyframes dmxdrop{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0 0 0 0)}}
+.boot>p:first-child{animation:dmxboot .7s linear 2.9s both}
+.boot>img{animation:dmxboot 1.1s linear 5s both}
+.boot>a{animation:dmxboot .7s linear 6.1s both}
+@keyframes dmxboot{0%{opacity:0}12%{opacity:.9}15%{opacity:0}30%{opacity:0}33%{opacity:1}36%{opacity:.15}48%{opacity:.15}52%{opacity:1}56%{opacity:.4}60%{opacity:1}72%{opacity:.6}75%{opacity:1}100%{opacity:1}}
+.hit{z-index:3;padding:0;margin:0;background:transparent;border:0;border-radius:40%;cursor:pointer}
+.hit:focus-visible{outline:3px dashed #f2b134;outline-offset:2px}
+.hit-dice:hover~svg .die{animation-duration:1.2s}
+.wheel-hover{animation:dmxspin 60s linear infinite paused}
+.hit-wheel:hover~svg .wheel-hover{animation-play-state:running}
+@keyframes dmxflow{to{transform:translateY(56px)}}
+.type{display:inline-block;overflow:hidden;white-space:nowrap;vertical-align:bottom;width:calc(22ch + 1.76em);animation:dmxtype 1.4s steps(22) 3.6s both}
+@keyframes dmxtype{from{width:0}}
+.type2{display:inline-block;overflow:hidden;white-space:nowrap;vertical-align:bottom;width:28ch;animation:dmxtype 1.2s steps(28) 6.8s both}
+.cursor{animation:dmxblink 1s steps(1) infinite}
+@keyframes dmxblink{50%{opacity:0}}
+.flicker{animation:dmxflicker 7s linear infinite}
+@keyframes dmxflicker{0%,90%,94%,100%{opacity:1}91%{opacity:.4}92%{opacity:1}93%{opacity:.6}}
+.pulse{animation:dmxpulse 3.2s ease-in-out infinite}
+@keyframes dmxpulse{50%{transform:scale(1.05) rotate(2deg)}}
+.ripple{animation:dmxripple 3.4s ease-out infinite}.ripple-2{animation-delay:1.7s}
+@keyframes dmxripple{0%{transform:scale(.8);opacity:1}100%{transform:scale(1.25);opacity:0}}
+.bob{animation:dmxbob 4s ease-in-out infinite}
+@keyframes dmxbob{50%{transform:translateY(-12px)}}
+.die{transform-box:fill-box;transform-origin:center;animation:dmxwobble 3.6s ease-in-out infinite}.die-2{animation-delay:-1.8s}
+@keyframes dmxwobble{50%{transform:rotate(7deg) translateY(-8px)}}
+.die.rolling{animation:dmxshake .8s linear}
+@keyframes dmxshake{0%{transform:translate(0,0) rotate(0)}8%{transform:translate(-14px,6px) rotate(-14deg)}16%{transform:translate(12px,-10px) rotate(12deg)}24%{transform:translate(-10px,-4px) rotate(-18deg)}32%{transform:translate(14px,8px) rotate(16deg)}40%{transform:translate(-12px,-12px) rotate(-10deg)}48%{transform:translate(10px,6px) rotate(20deg)}56%{transform:translate(-8px,10px) rotate(-14deg)}64%{transform:translate(8px,-8px) rotate(10deg)}72%{transform:translate(-6px,4px) rotate(-8deg)}80%{transform:translate(4px,-4px) rotate(5deg)}90%{transform:translate(-2px,2px) rotate(-2deg)}100%{transform:translate(0,0) rotate(0)}}
+@keyframes dmxroll{0%{transform:rotate(0) translateY(0)}40%{transform:rotate(200deg) translateY(-40px)}100%{transform:rotate(360deg) translateY(0)}}
+.wheel{animation:dmxspin 40s linear infinite}
+.wheel-burst.go{animation:dmxburst 1.6s cubic-bezier(.15,.55,.25,1) both}
+@keyframes dmxburst{to{transform:rotate(1440deg)}}
+@keyframes dmxspin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}.reveal.pre{opacity:1;transform:none}.type{width:calc(22ch + 1.76em)}.type2{width:28ch}.drop{clip-path:none}.intro{display:none}.tree-pulse{display:none}.eeg{stroke-dashoffset:0}}
+
+.intro{animation:dmxintroout .3s ease 1.3s forwards}
+@keyframes dmxintroout{to{opacity:0;visibility:hidden}}
+.intro-rise{animation:dmxrise 1.3s cubic-bezier(.6,0,.3,1) both}
+@keyframes dmxrise{from{transform:translateY(124px)}to{transform:translateY(-114px)}}
+.pop{animation:dmxpop .28s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes dmxpop{from{transform:scale(.2) rotate(-25deg);opacity:0}}
+.pop.out{animation:dmxpopout .28s cubic-bezier(.6,-.6,.8,0) both}
+@keyframes dmxpopout{to{transform:scale(.2) rotate(-25deg);opacity:0}}
+.sway{transform-box:fill-box;transform-origin:50% 100%;animation:dmxsway 4.4s ease-in-out infinite alternate}.sway-2{animation-delay:-1.5s}.sway-3{animation-delay:-3s}
+@keyframes dmxsway{from{transform:rotate(-2.5deg)}to{transform:rotate(2.5deg)}}
+.rod{transform-box:view-box;transform-origin:-40px 70px;animation:dmxrod 3s ease-in-out infinite alternate}
+@keyframes dmxrod{from{transform:rotate(-3deg)}to{transform:rotate(3deg)}}
+.fish{transform-box:fill-box;transform-origin:center;animation:dmxfish 2.6s ease-in-out infinite}
+@keyframes dmxfish{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-26px) rotate(-14deg)}}
+.sticker{will-change:transform}
+@media (max-width: 700px){.sticker{--stk:.5}}.sticker:active{cursor:grabbing}
+
+.rcpt{transform:translateY(-100%);will-change:transform}
+.rcpt.open{transform:translateY(0);animation:dmxprint 2.4s both}
+.rcpt.open.instant{animation:none;transition:transform .25s ease-out}
+.rcpt.closing{transform:translateY(-100%);animation:dmxretract 1s cubic-bezier(.45,0,.25,1) both}
+.rcpt.snap{transition:transform .3s ease-out}
+@keyframes dmxretract{from{transform:translateY(0)}to{transform:translateY(-100%)}}
+@keyframes dmxprint{0%{transform:translateY(-100%);animation-timing-function:linear}30%{transform:translateY(-67%);animation-timing-function:steps(1)}32%{transform:translateY(-68.5%)}34%{transform:translateY(-67%)}42%{transform:translateY(-67%);animation-timing-function:linear}68%{transform:translateY(-33%);animation-timing-function:steps(1)}70%{transform:translateY(-34.5%)}72%{transform:translateY(-33%)}80%{transform:translateY(-33%);animation-timing-function:cubic-bezier(.3,0,.4,1)}100%{transform:translateY(0)}}
+.rcpt.drag{transition:none !important;animation:none !important}
+.rcpt-body{visibility:hidden;transition:visibility 0s .3s}
+.rcpt.open .rcpt-body,.rcpt.drag .rcpt-body,.rcpt.closing .rcpt-body,.rcpt.snap .rcpt-body{visibility:visible;transition:visibility 0s}
+.rcpt-tab:active{cursor:grabbing}
+.paperbg{background-color:#f8f4ea;background-image:url(assets/papel.png);background-size:512px 512px}
+.zig{margin-top:-1px;-webkit-mask-image:linear-gradient(135deg,#000 50%,transparent 50%),linear-gradient(225deg,#000 50%,transparent 50%);mask-image:linear-gradient(135deg,#000 50%,transparent 50%),linear-gradient(225deg,#000 50%,transparent 50%);-webkit-mask-size:20px 12px;mask-size:20px 12px;-webkit-mask-repeat:repeat-x;mask-repeat:repeat-x}
+.rcpt-tab:focus-visible,.rcpt-link:focus-visible{outline:3px dashed #c8231a;outline-offset:3px}
+.rcpt-link .rcpt-arrow{transition:transform .2s ease}
+.rcpt-link:hover .rcpt-arrow{transform:translateX(4px) rotate(-12deg)}
+.rcpt-link:hover{background:rgba(67,196,99,.12)}
+.eeg{stroke-dasharray:1400;stroke-dashoffset:1400}
+.rcpt.open .eeg{animation:dmxeeg 2.4s linear 1.6s forwards}
+@keyframes dmxeeg{to{stroke-dashoffset:0}}
+.rcpt.closing .eeg,.rcpt.snap .eeg,.rcpt.drag .eeg{stroke-dashoffset:0}
+
+.tree-line{stroke-dasharray:1000;stroke-dashoffset:0;transition-property:stroke-dashoffset;transition-timing-function:cubic-bezier(.4,0,.2,1)}
+.tree.pre .tree-line{stroke-dashoffset:1000}
+.tree-dot{transition:opacity .35s ease 1.6s,transform .35s cubic-bezier(.2,1.6,.4,1) 1.6s;transform-box:fill-box;transform-origin:center}.tree.pre .tree-dot{opacity:0;transform:scale(0)}
+.tree-join{transform-box:fill-box;transform-origin:center;transition:transform .3s ease .9s}.tree.pre .tree-join{transform:scale(0)}
+.tree:not(.pre) .tree-join{animation:dmxjoin 2.6s ease-in-out 2.2s infinite}
+@keyframes dmxjoin{0%,100%{transform:scale(1)}50%{transform:scale(1.6)}}
+.tree-pulse{opacity:0;transition:opacity .6s ease 2.2s}.tree:not(.pre) .tree-pulse{opacity:.9}
+.tree:not(.pre) .tree-node{animation:dmxnode .55s cubic-bezier(.2,1.6,.4,1) var(--d, 0s) backwards}
+@keyframes dmxnode{from{transform:translate(-50%,-50%) scale(0)}}
+.tree-node{transform:translate(-50%,-50%);box-shadow:0 0 0 #1d1b1a;transition:transform .25s cubic-bezier(.2,1.4,.4,1),box-shadow .25s ease,border-color .2s}
+.tree-node:hover{transform:translate(-50%,-50%) scale(1.08);box-shadow:3px 3px 0 #1d1b1a}
+.tree-node.sel{transform:translate(-50%,-50%) scale(1.2);border-color:#c8231a;border-width:3px;box-shadow:6px 6px 0 #1d1b1a}
+.tree-card.c1{animation:dmxcardA .4s cubic-bezier(.2,.8,.2,1) both}.tree-card.c2{animation:dmxcardB .4s cubic-bezier(.2,.8,.2,1) both}
+@keyframes dmxcardA{from{opacity:0;transform:translateX(24px) rotate(1.5deg)}}
+@keyframes dmxcardB{from{opacity:0;transform:translateX(24px) rotate(1.5deg)}}
+.card-dot.on span{background:#1d1b1a}.card-dot:focus-visible{outline:2px dashed #c8231a}
+.tree-info.a1{animation:dmxinfoA .45s cubic-bezier(.2,.8,.2,1) both}.tree-info.a2{animation:dmxinfoB .45s cubic-bezier(.2,.8,.2,1) both}
+@keyframes dmxinfoA{from{opacity:0;transform:translateY(18px);clip-path:inset(0 0 100% 0)}to{opacity:1;transform:none;clip-path:inset(0 0 0 0)}}
+@keyframes dmxinfoB{from{opacity:0;transform:translateY(18px);clip-path:inset(0 0 100% 0)}to{opacity:1;transform:none;clip-path:inset(0 0 0 0)}}
+.tree-node:focus-visible{outline:3px dashed #c8231a;outline-offset:6px}
+.screen{background-color:#16110e;background-image:radial-gradient(ellipse at center,rgba(232,100,30,.22),transparent 70%)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script type="module">
+import { h, render, Component as PComponent } from './vendor/preact.module.js';
+import htm from './vendor/htm.module.js';
+const html = htm.bind(h);
+class Component extends PComponent {
+constructor(props) {
+super(props);
+this.state = { treeSel: 'dopa', treeAnim: '', cardIdx: 0, cardAnim: '', menuOpen: false, menuInstant: false, menuClosing: false, menuSnap: false, pre: [false, false, false, false, false, false], rolling: false, spinning: false, showDice: false, diceOut: false, diceNum: 7, showSpin: false, spinOut: false, spinNum: 0 };
+this.els = [];
+this.refFns = [0, 1, 2, 3, 4, 5].map((i) => (el) => { this.els[i] = el; });
+this.footRef = (el) => { this.footEl = el; };
+this.treeData = [
+{
+"id": "dopa",
+"d": "0.05s",
+"icon": "assets/dopamina.png",
+"x": "33.3%",
+"y": "50%",
+"kicker": "ÁRBOL GLOBAL",
+"title": "Dopamina permanente",
+"text": "Hacé prestigio desde la oleada 30 y convertí tu progreso en Dopamina. Con ella comprás mejoras permanentes para mesas, ejército, economía y prestigio.",
+"color": "#c4470f",
+"cards": [
+{
+"cat": "CORE",
+"bg": "#c2386b",
+"catColor": "#ffe0a8",
+"name": "Awakening",
+"lv": "Lv 1/1",
+"lines": [
+"Oro y DPS del ejército x1.5. El árbol echa raíces.",
+"Ahora x1.5 (MAX)"
+],
+"req": "",
+"costIcon": "",
+"cost": "MAX",
+"hasReq": false,
+"hasIcon": false
+},
+{
+"cat": "LEGADO",
+"name": "Dopamine Dividends",
+"lv": "Lv 0/25",
+"lines": [
+"Todo el oro x1.1 por nivel, en cada partida.",
+"Ahora x1 → x1.1"
+],
+"req": "Requiere Golden Touch",
+"costIcon": "assets/dopamina.png",
+"cost": "6",
+"bg": "#c2386b",
+"catColor": "#ffe0a8",
+"hasReq": true,
+"hasIcon": true
+},
+{
+"cat": "NIVEL 2",
+"name": "Roulette",
+"lv": "Lv 0/1",
+"lines": [
+"Desbloquea la Ruleta. Necesita nivel de combate 2 (oleada 100).",
+"Ahora 0 → 1"
+],
+"req": "Requiere Dice Board y nivel de combate 2",
+"costIcon": "assets/dopamina.png",
+"cost": "150",
+"bg": "#c2386b",
+"catColor": "#ffe0a8",
+"hasReq": true,
+"hasIcon": true
+}
+]
+},
+{
+"id": "tienda",
+"d": "1.4s",
+"icon": "assets/oro.png",
+"x": "57.8%",
+"y": "20.3%",
+"kicker": "TIENDA",
+"title": "Tienda de mejoras",
+"text": "Gastá el oro que juntás en mejoras que aceleran todas las mesas. Es el atajo para avanzar más rápido entre prestigio y prestigio.",
+"color": "#c4470f",
+"cards": [
+{
+"cat": "MEJORA",
+"bg": "#8a5a12",
+"catColor": "#ffe0a8",
+"name": "Iron Armor",
+"lv": "Lv 0/10",
+"lines": [
+"Vida de las tropas x1.15 por nivel.",
+"Ahora x1 → x1.15",
+"Ingresos +3.8% · se recupera en 1 s"
+],
+"req": "",
+"costIcon": "assets/oro.png",
+"cost": "3.00K",
+"hasReq": false,
+"hasIcon": true
+},
+{
+"cat": "MEJORA",
+"name": "Loot Pouch",
+"lv": "Lv 0/5",
+"lines": [
+"+5% de oro por nivel.",
+"Ahora x1 → x1.05",
+"Ingresos +5% · se recupera en 10 h 56 m"
+],
+"req": "",
+"costIcon": "assets/oro.png",
+"cost": "200",
+"bg": "#8a5a12",
+"catColor": "#ffe0a8",
+"hasReq": false,
+"hasIcon": true
+},
+{
+"cat": "DESBLOQUEO",
+"name": "Mage Academy",
+"lv": "Lv 0/1",
+"lines": [
+"Desbloquea magos: hechizos de área lentos y poderosos.",
+"Ahora 0 → 1"
+],
+"req": "",
+"costIcon": "assets/oro.png",
+"cost": "200",
+"bg": "#8a5a12",
+"catColor": "#ffe0a8",
+"hasReq": false,
+"hasIcon": true
+}
+]
+},
+{
+"id": "ruleta",
+"d": "1.5s",
+"icon": "assets/ruleta.png",
+"x": "84.4%",
+"y": "29.7%",
+"kicker": "ÁRBOL DE MESA · RULETA",
+"title": "Ruleta",
+"text": "Apostás tus monedas en el paño y elegís cuánto arriesgar, del 1% de tu saldo a todo o nada. Su árbol se paga en fichas y desbloquea apuestas nuevas, ruedas extra y un crupier automático.",
+"color": "#2e8f8a",
+"cards": [
+{
+"cat": "APUESTAS",
+"bg": "#1e6b47",
+"catColor": "#ffe0a8",
+"name": "Straight Up",
+"lv": "Lv 0/1",
+"lines": [
+"Desbloquea apuestas a un solo número (paga 35 a 1).",
+"Ahora 0 → 1"
+],
+"req": "Requiere Dozens & Columns",
+"costIcon": "assets/ficha.png",
+"cost": "2.00K",
+"hasReq": true,
+"hasIcon": true
+},
+{
+"cat": "APUESTAS",
+"name": "Splits & Streets",
+"lv": "Lv 0/1",
+"lines": [
+"Desbloquea apuestas split (17 a 1) y street (11 a 1).",
+"Ahora 0 → 1"
+],
+"req": "",
+"costIcon": "assets/ficha.png",
+"cost": "12.0K",
+"bg": "#1e6b47",
+"catColor": "#ffe0a8",
+"hasReq": false,
+"hasIcon": true
+},
+{
+"cat": "SALÓN",
+"name": "High Limit Room",
+"lv": "Lv 0/8",
+"lines": [
+"Fichas pagadas x1.1 por nivel.",
+"Ahora x1 → x1.1",
+"Ingresos +10%"
+],
+"req": "",
+"costIcon": "assets/ficha.png",
+"cost": "25.0K",
+"bg": "#1e6b47",
+"catColor": "#ffe0a8",
+"hasReq": false,
+"hasIcon": true
+}
+]
+},
+{
+"id": "dado",
+"d": "1.6s",
+"icon": "assets/dado.png",
+"x": "88.9%",
+"y": "62.5%",
+"kicker": "ÁRBOL DE MESA · DADOS",
+"title": "Casillero de dados",
+"text": "Tirás los dados y avanzás por un tablero lleno de casillas sorpresa. Cada vuelta completa suma recompensas. Su árbol se paga en billetes y mejora lo que paga el tablero.",
+"color": "#2e8f8a",
+"cards": [
+{
+"cat": "TABLERO",
+"bg": "#b8420c",
+"catColor": "#ffe0a8",
+"name": "Loaded Dice",
+"lv": "Lv 0/10",
+"lines": [
+"Recompensas del tablero x1.1. El nivel 8 duplica el bonus.",
+"Ahora x1 → x1.1",
+"Ingresos +10%"
+],
+"req": "",
+"costIcon": "assets/billete.png",
+"cost": "50",
+"hasReq": false,
+"hasIcon": true
+},
+{
+"cat": "MULTIPLICADORES",
+"name": "Dice Frequency",
+"lv": "Lv 0/5",
+"lines": [
+"Multiplicadores de dados x1.15 más probables por nivel.",
+"Ahora x1 → x1.15"
+],
+"req": "",
+"costIcon": "assets/billete.png",
+"cost": "1.00K",
+"bg": "#b8420c",
+"catColor": "#ffe0a8",
+"hasReq": false,
+"hasIcon": true
+},
+{
+"cat": "TABLERO",
+"name": "Extra Die",
+"lv": "Lv 0/4",
+"lines": [
+"Tirás un dado más.",
+"Ahora 1 → 2"
+],
+"req": "",
+"costIcon": "assets/billete.png",
+"cost": "400",
+"bg": "#b8420c",
+"catColor": "#ffe0a8",
+"hasReq": false,
+"hasIcon": true
+}
+]
+},
+{
+"id": "pez",
+"d": "1.7s",
+"icon": "assets/pez.png",
+"x": "66.7%",
+"y": "87.5%",
+"kicker": "ÁRBOL DE MESA · PESCA",
+"title": "Pesca",
+"text": "Elegís carnada y caña, tirás la línea y reaccionás cuando pica para ganar el minijuego. Lo que juntás en el balde se vende. Su árbol se paga en doblones y mejora tus probabilidades de pesca rara.",
+"color": "#2e8f8a",
+"cards": [
+{
+"cat": "EQUIPO",
+"bg": "#1f4f8a",
+"catColor": "#ffe0a8",
+"name": "Fish Sonar",
+"lv": "Lv 0/15",
+"lines": [
+"Peces raros x1.06 más probables.",
+"Ahora x1 → x1.06",
+"Ingresos +1.8%"
+],
+"req": "Requiere Carbon Rod",
+"costIcon": "assets/doblon.png",
+"cost": "60",
+"hasReq": true,
+"hasIcon": true
+},
+{
+"cat": "CARNADA",
+"name": "Glow Lure Bait",
+"lv": "Lv 0/1",
+"lines": [
+"Desbloquea la carnada Glow Lure (necesita una caña controlada).",
+"Ahora 0 → 1"
+],
+"req": "",
+"costIcon": "assets/doblon.png",
+"cost": "1.20K",
+"bg": "#1f4f8a",
+"catColor": "#ffe0a8",
+"hasReq": false,
+"hasIcon": true
+},
+{
+"cat": "VENTA",
+"name": "Smokehouse",
+"lv": "Lv 0/10",
+"lines": [
+"Los peces se venden x1.05.",
+"Ahora x1 → x1.05",
+"Ingresos +5%"
+],
+"req": "",
+"costIcon": "assets/doblon.png",
+"cost": "900",
+"bg": "#1f4f8a",
+"catColor": "#ffe0a8",
+"hasReq": false,
+"hasIcon": true
+}
+]
+},
+{
+"id": "espada",
+"d": "1.8s",
+"icon": "assets/espada.png",
+"x": "16.7%",
+"y": "84.4%",
+"kicker": "ÁRBOL DE MESA · EJÉRCITO",
+"title": "Ejército de oleadas",
+"text": "Un auto-battler sobre un tablero hexagonal: comprás tropas, las fusionás y resisten oleadas solas, incluso mientras jugás en otra mesa. Su árbol se paga en oro y potencia a tus tropas.",
+"color": "#2e8f8a",
+"cards": [
+{
+"cat": "GUERREROS",
+"bg": "#8e1610",
+"catColor": "#ffe0a8",
+"name": "Forged Blades",
+"lv": "Lv 0/15",
+"lines": [
+"Guerreros x1.35 de poder (precio x1.5).",
+"Ahora 0 → 1"
+],
+"req": "Requiere Drill Sergeant",
+"costIcon": "assets/oro.png",
+"cost": "72",
+"hasReq": true,
+"hasIcon": true
+},
+{
+"cat": "CRÍTICOS",
+"name": "Deadly Blows",
+"lv": "Lv 0/10",
+"lines": [
+"+0.1 al multiplicador de daño crítico por nivel.",
+"Ahora 1.5 → 1.6"
+],
+"req": "Requiere Keen Eye",
+"costIcon": "assets/oro.png",
+"cost": "2.40K",
+"bg": "#8e1610",
+"catColor": "#ffe0a8",
+"hasReq": true,
+"hasIcon": true
+},
+{
+"cat": "HECHIZOS",
+"name": "Battle Hymn",
+"lv": "Lv 0/10",
+"lines": [
+"Rally +0.25x de daño (lanzarlo cuesta x1.6).",
+"Ahora 0 → 1"
+],
+"req": "Requiere War Cry",
+"costIcon": "assets/oro.png",
+"cost": "300",
+"bg": "#8e1610",
+"catColor": "#ffe0a8",
+"hasReq": true,
+"hasIcon": true
+}
+]
+}
+];
+this.treePick = {};
+this.treeData.forEach((n) => { this.treePick[n.id] = () => { this.restartCards(); this.setState((s) => (s.treeSel === n.id ? null : { treeSel: n.id, treeAnim: s.treeAnim === 'a1' ? 'a2' : 'a1', cardIdx: 0, cardAnim: '' })); }; });
+this.nextCard = (to) => this.setState((s) => ({ cardIdx: typeof to === 'number' ? to : (s.cardIdx + 1) % 3, cardAnim: s.cardAnim === 'c1' ? 'c2' : 'c1' }));
+this.cardPick = [0, 1, 2].map((i) => () => { this.restartCards(); this.nextCard(i); });
+this.restartCards = () => { clearInterval(this.cardT); if (this.treeVisible) this.cardT = setInterval(() => this.nextCard(), 4000); };
+this.rcptRef = (el) => { this.rcptEl = el; };
+this.openMenu = () => { clearTimeout(this.closeT); this.setState({ menuOpen: true, menuInstant: false, menuClosing: false, menuSnap: false }); };
+this.closeMenu = () => {
+if (!this.state.menuOpen) return;
+clearTimeout(this.closeT);
+this.setState({ menuOpen: false, menuClosing: true, menuSnap: false });
+this.closeT = setTimeout(() => this.setState({ menuClosing: false }), 1000);
+this.timers.push(this.closeT);
+};
+this.goTo = (id) => (e) => {
+if (e && e.preventDefault) e.preventDefault();
+this.closeMenu();
+const el = document.getElementById(id);
+if (!el) return;
+const reduce = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const y = el.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop || 0);
+window.scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
+};
+this.goQueEs = this.goTo('que-es');
+this.goComo = this.goTo('como-se-juega');
+this.goArboles = this.goTo('arboles');
+this.goFicha = this.goTo('ficha');
+this.toggleMenu = () => { if (this.dragMoved) { this.dragMoved = false; return; } if (this.state.menuOpen) this.closeMenu(); else this.openMenu(); };
+this.tabDown = (e) => {
+if (!this.rcptEl) return;
+this.tab = { y0: e.clientY, h: this.rcptEl.offsetHeight, open: this.state.menuOpen, moved: false };
+window.addEventListener('pointermove', this.tabMove);
+window.addEventListener('pointerup', this.tabUp);
+window.addEventListener('pointercancel', this.tabUp);
+};
+this.tabMove = (e) => {
+if (!this.tab || !this.rcptEl) return;
+const dy = e.clientY - this.tab.y0;
+if (!this.tab.moved && Math.abs(dy) < 6) return;
+this.tab.moved = true;
+const base = this.tab.open ? 0 : -this.tab.h;
+const y = Math.max(-this.tab.h, Math.min(0, base + dy));
+this.rcptEl.classList.add('drag');
+this.rcptEl.style.transform = 'translateY(' + y + 'px)';
+this.tab.y = y;
+};
+this.tabUp = () => {
+window.removeEventListener('pointermove', this.tabMove);
+window.removeEventListener('pointerup', this.tabUp);
+window.removeEventListener('pointercancel', this.tabUp);
+if (!this.tab || !this.rcptEl) return;
+const t = this.tab; this.tab = null;
+if (!t.moved) return;
+this.dragMoved = true;
+this.rcptEl.classList.remove('drag');
+this.rcptEl.style.transform = '';
+const op = t.y > -t.h * 0.6;
+clearTimeout(this.closeT);
+this.setState({ menuOpen: op, menuInstant: true, menuClosing: false, menuSnap: !op });
+};
+this.timers = [];
+this.later = (fn, ms) => { const t = setTimeout(fn, ms); this.timers.push(t); return t; };
+this.roll = () => {
+if (this.state.rolling) return;
+this.setState({ rolling: true, showDice: false, diceOut: false });
+this.later(() => {
+const n = 2 + Math.floor(Math.random() * 6) + Math.floor(Math.random() * 6);
+this.setState({ rolling: false, diceNum: n, showDice: true, diceOut: false });
+this.later(() => this.setState({ diceOut: true }), 1000);
+this.later(() => this.setState({ showDice: false, diceOut: false }), 1300);
+}, 800);
+};
+this.spin = () => {
+if (this.state.spinning) return;
+this.setState({ spinning: true, showSpin: false, spinOut: false });
+this.later(() => {
+this.setState({ spinning: false, spinNum: Math.floor(Math.random() * 37), showSpin: true, spinOut: false });
+this.later(() => this.setState({ spinOut: true }), 1000);
+this.later(() => this.setState({ showSpin: false, spinOut: false }), 1300);
+}, 1600);
+};
+/* ---- física de los stickers del footer ---- */
+this.stkBase = [
+{ src: 'assets/billete.png', s: 'r', x: 3, w: 150, r: 0.3, rot: -8 },
+{ src: 'assets/dado.png', s: 'r', x: 12, w: 120, r: 0.46, rot: 10 },
+{ src: 'assets/dopamina.png', s: 'c', x: 21, w: 120, r: 0.47, rot: -6 },
+{ src: 'assets/doblon.png', s: 'c', x: 30, w: 130, r: 0.47, rot: 8 },
+{ src: 'assets/estrella.png', s: 'r', x: 39, w: 130, r: 0.4, rot: -12 },
+{ src: 'assets/pez.png', s: 'r', x: 48, w: 150, r: 0.34, rot: 6 },
+{ src: 'assets/oro.png', s: 'c', x: 57, w: 130, r: 0.47, rot: -4 },
+{ src: 'assets/ruleta.png', s: 'c', x: 66, w: 140, r: 0.48, rot: 12 },
+{ src: 'assets/ticket.png', s: 'r', x: 75, w: 150, r: 0.32, rot: -10 },
+{ src: 'assets/ficha.png', s: 'c', x: 84, w: 130, r: 0.48, rot: 6 },
+{ src: 'assets/espada.png', s: 'r', x: 92, w: 96, r: 0.5, rot: -14 }
+];
+this.stickerEls = [];
+this.stickerRefs = this.stkBase.map((b, i) => (el) => { this.stickerEls[i] = el; });
+this.stickerDown = this.stkBase.map((b, i) => (e) => this.grab(i, e));
+this.stickerList = this.stkBase.map((b, i) => ({
+src: b.src, w: b.w + 'px', ref: this.stickerRefs[i], down: this.stickerDown[i],
+tf: 'translate(' + b.x + 'cqw, 40px) rotate(' + b.rot + 'deg)'
+}));
+this.bodies = null;
+this.drag = null;
+this.running = false;
+this.frame = (t) => {
+this.raf = null;
+if (!this.bodies) return;
+const dt = Math.min(1 / 30, Math.max(0.001, (t - (this.lastT || t)) / 1000));
+this.lastT = t;
+const moving = this.step(dt);
+this.paint();
+if (this.inView || moving || this.drag) { this.raf = requestAnimationFrame(this.frame); } else { this.running = false; this.lastT = 0; }
+};
+this.onMove = (e) => {
+if (!this.drag || !this.footEl) return;
+const r = this.footEl.getBoundingClientRect();
+const b = this.bodies[this.drag.i];
+const nx = e.clientX - r.left - this.drag.ox, ny = e.clientY - r.top - this.drag.oy;
+const now = performance.now(), dt = Math.max(0.008, (now - this.drag.t) / 1000);
+b.vx = (nx - b.x) / dt; b.vy = (ny - b.y) / dt;
+b.x = nx; b.y = ny; this.drag.t = now;
+this.wake();
+};
+this.onUp = () => {
+if (!this.drag) return;
+const b = this.bodies[this.drag.i];
+const max = 1800;
+b.vx = Math.max(-max, Math.min(max, b.vx)); b.vy = Math.max(-max, Math.min(max, b.vy));
+b.va = b.vx / b.r * 0.5;
+if (this.stickerEls[this.drag.i]) this.stickerEls[this.drag.i].style.cursor = 'grab';
+this.drag = null;
+window.removeEventListener('pointermove', this.onMove);
+window.removeEventListener('pointerup', this.onUp);
+window.removeEventListener('pointercancel', this.onUp);
+this.wake();
+};
+}
+setupBodies() {
+if (!this.footEl) return;
+const r = this.footEl.getBoundingClientRect();
+this.fw = r.width; this.fh = r.height;
+this.bodies = this.stkBase.map((b, i) => {
+const el = this.stickerEls[i];
+const w = el && el.offsetWidth ? el.offsetWidth : b.w;
+const h = el && el.offsetHeight ? el.offsetHeight : w;
+return { k: b.r, s: b.s, x: b.x / 100 * this.fw + w / 2, y: 40 + w / 2 + (i % 4) * 45, vx: 0, vy: 0, a: b.rot * Math.PI / 180, va: 0, r: w * b.r, hw: w / 2, hh: h / 2 };
+});
+if (this.reduce) { const floor = this.fh - 32; this.bodies.forEach((b) => { b.y = floor - b.r; }); }
+this.paint();
+}
+ext(b) {
+if (b.s === 'c') return b.hw;
+const c = Math.abs(Math.cos(b.a)), sn = Math.abs(Math.sin(b.a));
+return b.hw * sn + b.hh * c;
+}
+bounds() {
+if (!this.footEl) return;
+const r = this.footEl.getBoundingClientRect();
+this.fw = r.width; this.fh = r.height;
+}
+step(dt) {
+this.bounds();
+const g = 2400, floor = this.fh - 32, B = this.bodies;
+let moving = false;
+for (let k = 0; k < B.length; k++) {
+const b = B[k];
+if (this.drag && this.drag.i === k) continue;
+b.vy += g * dt;
+b.x += b.vx * dt; b.y += b.vy * dt; b.a += b.va * dt;
+const ext = this.ext(b);
+if (b.y + ext > floor) {
+b.y = floor - ext;
+b.vy = Math.abs(b.vy) > 120 ? -b.vy * 0.35 : 0;
+b.vx *= 0.9; b.va = b.vx / b.r;
+}
+if (b.x - b.r < 0) { b.x = b.r; b.vx = Math.abs(b.vx) * 0.5; }
+if (b.x + b.r > this.fw) { b.x = this.fw - b.r; b.vx = -Math.abs(b.vx) * 0.5; }
+if (b.y - b.r < -1200) { b.y = -1200 + b.r; b.vy = 0; }
+}
+for (let it = 0; it < 4; it++) {
+for (let i = 0; i < B.length; i++) {
+for (let j = i + 1; j < B.length; j++) {
+const p = B[i], q = B[j];
+const dx = q.x - p.x, dy = q.y - p.y, d = Math.sqrt(dx * dx + dy * dy) || 0.01, m = p.r + q.r;
+if (d >= m) continue;
+const nx = dx / d, ny = dy / d, ov = m - d;
+const pd = this.drag && this.drag.i === i, qd = this.drag && this.drag.i === j;
+const wp = pd ? 0 : (qd ? 1 : 0.5), wq = qd ? 0 : (pd ? 1 : 0.5);
+p.x -= nx * ov * wp; p.y -= ny * ov * wp; q.x += nx * ov * wq; q.y += ny * ov * wq;
+const vn = (q.vx - p.vx) * nx + (q.vy - p.vy) * ny;
+if (vn < 0) {
+const imp = -1.3 * vn / 2;
+if (!pd) { p.vx -= imp * nx; p.vy -= imp * ny; }
+if (!qd) { q.vx += imp * nx; q.vy += imp * ny; }
+}
+}
+}
+}
+for (let k = 0; k < B.length; k++) {
+const b = B[k];
+const ex2 = this.ext(b);
+if (b.y + ex2 > floor) { b.y = floor - ex2; if (b.vy > 0) b.vy = 0; }
+b.va *= 0.98;
+if (Math.abs(b.vx) > 6 || Math.abs(b.vy) > 6 || Math.abs(b.va) > 0.05) moving = true;
+else { b.vx = 0; b.vy = 0; b.va = 0; }
+}
+return moving;
+}
+paint() {
+if (!this.bodies) return;
+this.bodies.forEach((b, i) => {
+const el = this.stickerEls[i];
+if (el && el.offsetWidth) { b.hw = el.offsetWidth / 2; b.hh = (el.offsetHeight || el.offsetWidth) / 2; b.r = el.offsetWidth * b.k; }
+if (el) el.style.transform = 'translate(' + (b.x - b.hw).toFixed(1) + 'px, ' + (b.y - b.hh).toFixed(1) + 'px) rotate(' + b.a.toFixed(3) + 'rad)';
+});
+}
+wake() {
+if (this.running) return;
+this.running = true; this.lastT = 0;
+this.raf = requestAnimationFrame(this.frame);
+}
+grab(i, e) {
+if (!this.bodies || !this.footEl) return;
+if (e.preventDefault) e.preventDefault();
+const r = this.footEl.getBoundingClientRect();
+const b = this.bodies[i];
+this.drag = { i: i, ox: e.clientX - r.left - b.x, oy: e.clientY - r.top - b.y, t: performance.now() };
+b.vx = 0; b.vy = 0; b.va = 0;
+if (this.stickerEls[i]) this.stickerEls[i].style.cursor = 'grabbing';
+window.addEventListener('pointermove', this.onMove);
+window.addEventListener('pointerup', this.onUp);
+window.addEventListener('pointercancel', this.onUp);
+this.wake();
+}
+componentDidMount() {
+const reduce = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+this.reduce = reduce;
+if ('IntersectionObserver' in window && this.els[4]) {
+this.tio = new IntersectionObserver((entries) => {
+const v = entries.some((e) => e.isIntersecting);
+if (v !== this.treeVisible) { this.treeVisible = v; if (v) this.restartCards(); else clearInterval(this.cardT); }
+}, { threshold: 0.2 });
+this.tio.observe(this.els[4]);
+} else { this.treeVisible = true; this.restartCards(); }
+this.setupBodies();
+if ('IntersectionObserver' in window && this.footEl && !reduce) {
+this.dropped = false;
+this.fio = new IntersectionObserver((entries) => {
+const vis = entries.some((e) => e.isIntersecting);
+this.inView = vis;
+if (vis) { if (!this.dropped) { this.dropped = true; this.setupBodies(); } this.wake(); }
+}, { threshold: 0.05 });
+this.fio.observe(this.footEl);
+} else { this.wake(); }
+if (!reduce && 'IntersectionObserver' in window) {
+const vh = window.innerHeight || 0;
+const pre = this.els.map((el) => !!el && el.getBoundingClientRect().top > vh * 0.9);
+if (pre.some(Boolean)) {
+this.setState({ pre });
+this.io = new IntersectionObserver((entries) => {
+entries.forEach((e) => {
+if (!e.isIntersecting) return;
+const i = this.els.indexOf(e.target);
+if (i < 0) return;
+this.io.unobserve(e.target);
+this.setState((s) => { const p = s.pre.slice(); p[i] = false; return { pre: p }; });
+});
+}, { threshold: 0.15 });
+this.els.forEach((el, i) => { if (el && pre[i]) this.io.observe(el); });
+}
+}
+}
+componentWillUnmount() {
+clearInterval(this.cardT);
+if (this.tio) this.tio.disconnect();
+this.timers.forEach((t) => clearTimeout(t));
+if (this.raf) cancelAnimationFrame(this.raf);
+if (this.io) this.io.disconnect();
+if (this.fio) this.fio.disconnect();
+window.removeEventListener('pointermove', this.onMove);
+window.removeEventListener('pointerup', this.onUp);
+window.removeEventListener('pointercancel', this.onUp);
+window.removeEventListener('pointermove', this.tabMove);
+window.removeEventListener('pointerup', this.tabUp);
+window.removeEventListener('pointercancel', this.tabUp);
+}
+renderVals() {
+const st = this.state;
+const reds = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+const spinBg = st.spinNum === 0 ? '#2e8f8a' : (reds.indexOf(st.spinNum) >= 0 ? '#c8231a' : '#1d1b1a');
+const v = {
+roll: this.roll,
+spin: this.spin,
+rollCls: st.rolling ? 'rolling' : '',
+spinCls: st.spinning ? 'go' : '',
+showDice: st.showDice,
+diceOut: st.diceOut ? 'out' : '',
+diceNum: st.diceNum,
+showSpin: st.showSpin,
+spinOut: st.spinOut ? 'out' : '',
+spinNum: st.spinNum,
+spinBg: spinBg,
+footRef: this.footRef,
+treeNodes: this.treeData.map((n) => ({ d: n.d, x: n.x, y: n.y, icon: n.icon, label: n.title, pick: this.treePick[n.id], pressed: st.treeSel === n.id ? 'true' : 'false', cls: st.treeSel === n.id ? 'sel' : '' })),
+sel: this.treeData.find((n) => n.id === st.treeSel) || this.treeData[0],
+selCard: (this.treeData.find((n) => n.id === st.treeSel) || this.treeData[0]).cards[st.cardIdx % 3],
+hasCard: true,
+cardAnim: st.cardAnim,
+cardDots: [0, 1, 2].map((i) => ({ pick: this.cardPick[i], label: 'Ver mejora ' + (i + 1), cls: i === st.cardIdx % 3 ? 'on' : '', pressed: i === st.cardIdx % 3 ? 'true' : 'false' })),
+selAnim: st.treeAnim,
+rcptRef: this.rcptRef,
+menuCls: st.menuOpen ? (st.menuInstant ? 'open instant' : 'open') : (st.menuClosing ? 'closing' : (st.menuSnap ? 'snap' : '')),
+menuOpen: st.menuOpen ? 'true' : 'false',
+tabLabel: st.menuOpen ? 'CERRAR ▲' : 'TIRÁ ▼',
+toggleMenu: this.toggleMenu,
+goQueEs: this.goQueEs,
+goComo: this.goComo,
+goArboles: this.goArboles,
+goFicha: this.goFicha,
+closeMenu: this.closeMenu,
+tabDown: this.tabDown,
+stickers: this.stickerList
+};
+for (let i = 0; i < 6; i++) { v['ref' + i] = this.refFns[i]; v['rv' + i] = st.pre[i] ? 'pre' : ''; }
+return v;
+}
+render() {
+const v = this.renderVals();
+return html`<div style="position: relative; width: 100%; min-height: 100vh; display: flex; flex-direction: column; background: #efe6d4; color: #1d1b1a; font-family: 'IBM Plex Mono', ui-monospace, monospace">
+<div class="intro" aria-hidden="true" style="position: fixed; inset: 0; z-index: 100; pointer-events: none; overflow: hidden; background: #f2b134"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="display: block; width: 100%; height: 100%"><g class="intro-rise"><path d="M 0 -18.00 L 2 -16.59 L 4 -15.24 L 6 -13.94 L 8 -12.70 L 10 -11.52 L 12 -10.40 L 14 -9.33 L 16 -8.32 L 18 -7.37 L 20 -6.48 L 22 -5.64 L 24 -4.87 L 26 -4.15 L 28 -3.48 L 30 -2.88 L 32 -2.33 L 34 -1.84 L 36 -1.41 L 38 -1.04 L 40 -0.72 L 42 -0.46 L 44 -0.26 L 46 -0.12 L 48 -0.03 L 50 0.00 L 52 -0.03 L 54 -0.12 L 56 -0.26 L 58 -0.46 L 60 -0.72 L 62 -1.04 L 64 -1.41 L 66 -1.84 L 68 -2.33 L 70 -2.88 L 72 -3.48 L 74 -4.15 L 76 -4.87 L 78 -5.64 L 80 -6.48 L 82 -7.37 L 84 -8.32 L 86 -9.33 L 88 -10.40 L 90 -11.52 L 92 -12.70 L 94 -13.94 L 96 -15.24 L 98 -16.59 L 100 -18.00 L 100 4.00 L 98 5.41 L 96 6.76 L 94 8.06 L 92 9.30 L 90 10.48 L 88 11.60 L 86 12.67 L 84 13.68 L 82 14.63 L 80 15.52 L 78 16.36 L 76 17.13 L 74 17.85 L 72 18.52 L 70 19.12 L 68 19.67 L 66 20.16 L 64 20.59 L 62 20.96 L 60 21.28 L 58 21.54 L 56 21.74 L 54 21.88 L 52 21.97 L 50 22.00 L 48 21.97 L 46 21.88 L 44 21.74 L 42 21.54 L 40 21.28 L 38 20.96 L 36 20.59 L 34 20.16 L 32 19.67 L 30 19.12 L 28 18.52 L 26 17.85 L 24 17.13 L 22 16.36 L 20 15.52 L 18 14.63 L 16 13.68 L 14 12.67 L 12 11.60 L 10 10.48 L 8 9.30 L 6 8.06 L 4 6.76 L 2 5.41 L 0 4.00 Z" fill="#f2b134"></path><path d="M 0 4.00 L 2 5.41 L 4 6.76 L 6 8.06 L 8 9.30 L 10 10.48 L 12 11.60 L 14 12.67 L 16 13.68 L 18 14.63 L 20 15.52 L 22 16.36 L 24 17.13 L 26 17.85 L 28 18.52 L 30 19.12 L 32 19.67 L 34 20.16 L 36 20.59 L 38 20.96 L 40 21.28 L 42 21.54 L 44 21.74 L 46 21.88 L 48 21.97 L 50 22.00 L 52 21.97 L 54 21.88 L 56 21.74 L 58 21.54 L 60 21.28 L 62 20.96 L 64 20.59 L 66 20.16 L 68 19.67 L 70 19.12 L 72 18.52 L 74 17.85 L 76 17.13 L 78 16.36 L 80 15.52 L 82 14.63 L 84 13.68 L 86 12.67 L 88 11.60 L 90 10.48 L 92 9.30 L 94 8.06 L 96 6.76 L 98 5.41 L 100 4.00 L 100 26.00 L 98 27.41 L 96 28.76 L 94 30.06 L 92 31.30 L 90 32.48 L 88 33.60 L 86 34.67 L 84 35.68 L 82 36.63 L 80 37.52 L 78 38.36 L 76 39.13 L 74 39.85 L 72 40.52 L 70 41.12 L 68 41.67 L 66 42.16 L 64 42.59 L 62 42.96 L 60 43.28 L 58 43.54 L 56 43.74 L 54 43.88 L 52 43.97 L 50 44.00 L 48 43.97 L 46 43.88 L 44 43.74 L 42 43.54 L 40 43.28 L 38 42.96 L 36 42.59 L 34 42.16 L 32 41.67 L 30 41.12 L 28 40.52 L 26 39.85 L 24 39.13 L 22 38.36 L 20 37.52 L 18 36.63 L 16 35.68 L 14 34.67 L 12 33.60 L 10 32.48 L 8 31.30 L 6 30.06 L 4 28.76 L 2 27.41 L 0 26.00 Z" fill="#e8641e"></path><path d="M 0 26.00 L 2 27.41 L 4 28.76 L 6 30.06 L 8 31.30 L 10 32.48 L 12 33.60 L 14 34.67 L 16 35.68 L 18 36.63 L 20 37.52 L 22 38.36 L 24 39.13 L 26 39.85 L 28 40.52 L 30 41.12 L 32 41.67 L 34 42.16 L 36 42.59 L 38 42.96 L 40 43.28 L 42 43.54 L 44 43.74 L 46 43.88 L 48 43.97 L 50 44.00 L 52 43.97 L 54 43.88 L 56 43.74 L 58 43.54 L 60 43.28 L 62 42.96 L 64 42.59 L 66 42.16 L 68 41.67 L 70 41.12 L 72 40.52 L 74 39.85 L 76 39.13 L 78 38.36 L 80 37.52 L 82 36.63 L 84 35.68 L 86 34.67 L 88 33.60 L 90 32.48 L 92 31.30 L 94 30.06 L 96 28.76 L 98 27.41 L 100 26.00 L 100 48.00 L 98 49.41 L 96 50.76 L 94 52.06 L 92 53.30 L 90 54.48 L 88 55.60 L 86 56.67 L 84 57.68 L 82 58.63 L 80 59.52 L 78 60.36 L 76 61.13 L 74 61.85 L 72 62.52 L 70 63.12 L 68 63.67 L 66 64.16 L 64 64.59 L 62 64.96 L 60 65.28 L 58 65.54 L 56 65.74 L 54 65.88 L 52 65.97 L 50 66.00 L 48 65.97 L 46 65.88 L 44 65.74 L 42 65.54 L 40 65.28 L 38 64.96 L 36 64.59 L 34 64.16 L 32 63.67 L 30 63.12 L 28 62.52 L 26 61.85 L 24 61.13 L 22 60.36 L 20 59.52 L 18 58.63 L 16 57.68 L 14 56.67 L 12 55.60 L 10 54.48 L 8 53.30 L 6 52.06 L 4 50.76 L 2 49.41 L 0 48.00 Z" fill="#c8231a"></path><path d="M 0 48.00 L 2 49.41 L 4 50.76 L 6 52.06 L 8 53.30 L 10 54.48 L 12 55.60 L 14 56.67 L 16 57.68 L 18 58.63 L 20 59.52 L 22 60.36 L 24 61.13 L 26 61.85 L 28 62.52 L 30 63.12 L 32 63.67 L 34 64.16 L 36 64.59 L 38 64.96 L 40 65.28 L 42 65.54 L 44 65.74 L 46 65.88 L 48 65.97 L 50 66.00 L 52 65.97 L 54 65.88 L 56 65.74 L 58 65.54 L 60 65.28 L 62 64.96 L 64 64.59 L 66 64.16 L 68 63.67 L 70 63.12 L 72 62.52 L 74 61.85 L 76 61.13 L 78 60.36 L 80 59.52 L 82 58.63 L 84 57.68 L 86 56.67 L 88 55.60 L 90 54.48 L 92 53.30 L 94 52.06 L 96 50.76 L 98 49.41 L 100 48.00 L 100 70.00 L 98 71.41 L 96 72.76 L 94 74.06 L 92 75.30 L 90 76.48 L 88 77.60 L 86 78.67 L 84 79.68 L 82 80.63 L 80 81.52 L 78 82.36 L 76 83.13 L 74 83.85 L 72 84.52 L 70 85.12 L 68 85.67 L 66 86.16 L 64 86.59 L 62 86.96 L 60 87.28 L 58 87.54 L 56 87.74 L 54 87.88 L 52 87.97 L 50 88.00 L 48 87.97 L 46 87.88 L 44 87.74 L 42 87.54 L 40 87.28 L 38 86.96 L 36 86.59 L 34 86.16 L 32 85.67 L 30 85.12 L 28 84.52 L 26 83.85 L 24 83.13 L 22 82.36 L 20 81.52 L 18 80.63 L 16 79.68 L 14 78.67 L 12 77.60 L 10 76.48 L 8 75.30 L 6 74.06 L 4 72.76 L 2 71.41 L 0 70.00 Z" fill="#8e1610"></path><path d="M 0 70.00 L 2 71.41 L 4 72.76 L 6 74.06 L 8 75.30 L 10 76.48 L 12 77.60 L 14 78.67 L 16 79.68 L 18 80.63 L 20 81.52 L 22 82.36 L 24 83.13 L 26 83.85 L 28 84.52 L 30 85.12 L 32 85.67 L 34 86.16 L 36 86.59 L 38 86.96 L 40 87.28 L 42 87.54 L 44 87.74 L 46 87.88 L 48 87.97 L 50 88.00 L 52 87.97 L 54 87.88 L 56 87.74 L 58 87.54 L 60 87.28 L 62 86.96 L 64 86.59 L 66 86.16 L 68 85.67 L 70 85.12 L 72 84.52 L 74 83.85 L 76 83.13 L 78 82.36 L 80 81.52 L 82 80.63 L 84 79.68 L 86 78.67 L 88 77.60 L 90 76.48 L 92 75.30 L 94 74.06 L 96 72.76 L 98 71.41 L 100 70.00 L 100 92.00 L 98 93.41 L 96 94.76 L 94 96.06 L 92 97.30 L 90 98.48 L 88 99.60 L 86 100.67 L 84 101.68 L 82 102.63 L 80 103.52 L 78 104.36 L 76 105.13 L 74 105.85 L 72 106.52 L 70 107.12 L 68 107.67 L 66 108.16 L 64 108.59 L 62 108.96 L 60 109.28 L 58 109.54 L 56 109.74 L 54 109.88 L 52 109.97 L 50 110.00 L 48 109.97 L 46 109.88 L 44 109.74 L 42 109.54 L 40 109.28 L 38 108.96 L 36 108.59 L 34 108.16 L 32 107.67 L 30 107.12 L 28 106.52 L 26 105.85 L 24 105.13 L 22 104.36 L 20 103.52 L 18 102.63 L 16 101.68 L 14 100.67 L 12 99.60 L 10 98.48 L 8 97.30 L 6 96.06 L 4 94.76 L 2 93.41 L 0 92.00 Z" fill="#5b1410"></path><path d="M 0 92.00 L 2 93.41 L 4 94.76 L 6 96.06 L 8 97.30 L 10 98.48 L 12 99.60 L 14 100.67 L 16 101.68 L 18 102.63 L 20 103.52 L 22 104.36 L 24 105.13 L 26 105.85 L 28 106.52 L 30 107.12 L 32 107.67 L 34 108.16 L 36 108.59 L 38 108.96 L 40 109.28 L 42 109.54 L 44 109.74 L 46 109.88 L 48 109.97 L 50 110.00 L 52 109.97 L 54 109.88 L 56 109.74 L 58 109.54 L 60 109.28 L 62 108.96 L 64 108.59 L 66 108.16 L 68 107.67 L 70 107.12 L 72 106.52 L 74 105.85 L 76 105.13 L 78 104.36 L 80 103.52 L 82 102.63 L 84 101.68 L 86 100.67 L 88 99.60 L 90 98.48 L 92 97.30 L 94 96.06 L 96 94.76 L 98 93.41 L 100 92.00 L 100 420.00 L 98 420.00 L 96 420.00 L 94 420.00 L 92 420.00 L 90 420.00 L 88 420.00 L 86 420.00 L 84 420.00 L 82 420.00 L 80 420.00 L 78 420.00 L 76 420.00 L 74 420.00 L 72 420.00 L 70 420.00 L 68 420.00 L 66 420.00 L 64 420.00 L 62 420.00 L 60 420.00 L 58 420.00 L 56 420.00 L 54 420.00 L 52 420.00 L 50 420.00 L 48 420.00 L 46 420.00 L 44 420.00 L 42 420.00 L 40 420.00 L 38 420.00 L 36 420.00 L 34 420.00 L 32 420.00 L 30 420.00 L 28 420.00 L 26 420.00 L 24 420.00 L 22 420.00 L 20 420.00 L 18 420.00 L 16 420.00 L 14 420.00 L 12 420.00 L 10 420.00 L 8 420.00 L 6 420.00 L 4 420.00 L 2 420.00 L 0 420.00 Z" fill="#2e8f8a"></path></g></svg></div>
+<div ref=${v.rcptRef} class="rcpt ${v.menuCls}" style="position: fixed; top: 0; right: clamp(12px, 3vw, 48px); z-index: 90; width: min(480px, calc(100vw - 24px))">
+<div id="dmx-menu" class="rcpt-body" style="background-color: #f8f4ea; background-image: url(assets/papel.png); background-size: 512px 512px; color: #1d1b1a; font-family: 'IBM Plex Mono', monospace; padding: 26px 26px 18px; box-shadow: 0 18px 40px rgba(0,0,0,.35)">
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px">
+<p style="margin: 0; font-family: 'Archivo Black', sans-serif; font-size: 30px; line-height: 1">DMX-01</p>
+<p style="margin: 0; font-size: 12px; text-align: right">SESIÓN Nº 000001<br />LECTURA EN CURSO</p>
+</div>
+<p style="margin: 8px 0 14px; font-size: 12px; letter-spacing: 0.06em">REGISTRO DE ACTIVIDAD DOPAMINÉRGICA</p>
+<div style="border-top: 2px dashed #1d1b1a; border-bottom: 2px dashed #1d1b1a; padding: 8px 0">
+<div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px"><span>CH-01 · DOPA</span><span>25 mm/s</span></div>
+<svg aria-hidden="true" viewBox="0 0 440 80" preserveAspectRatio="none" style="display: block; width: 100%; height: 70px; background-image: linear-gradient(rgba(29,27,26,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(29,27,26,.12) 1px, transparent 1px); background-size: 22px 16px"><polyline class="eeg" points="0,38.4 2,38.9 4,42.0 6,41.6 8,42.1 10,44.8 12,48.3 14,47.8 16,47.5 18,43.8 20,45.0 22,42.5 24,40.8 26,39.1 28,38.5 30,41.4 32,39.6 34,38.3 36,37.3 38,32.9 40,33.1 42,34.8 44,35.5 46,36.6 48,37.4 50,33.5 52,37.7 54,39.4 56,39.7 58,39.0 60,42.1 62,41.0 64,47.0 66,47.4 68,46.0 70,44.8 72,48.4 74,46.0 76,47.3 78,46.2 80,43.1 82,41.3 84,41.1 86,38.8 88,35.9 90,35.6 92,37.6 94,32.1 96,10.0 98,64.0 100,32.7 102,34.5 104,34.7 106,34.8 108,39.8 110,36.1 112,38.7 114,38.8 116,42.7 118,41.8 120,43.3 122,46.5 124,44.5 126,46.3 128,48.4 130,43.3 132,42.5 134,42.8 136,45.0 138,42.9 140,39.3 142,38.6 144,36.3 146,36.8 148,33.2 150,36.3 152,36.8 154,36.8 156,35.4 158,37.0 160,31.8 162,34.2 164,39.3 166,39.3 168,38.4 170,42.9 172,42.3 174,44.7 176,42.7 178,43.0 180,45.1 182,43.7 184,45.3 186,48.6 188,44.3 190,41.7 192,40.9 194,40.5 196,43.0 198,39.1 200,37.4 202,35.0 204,39.1 206,34.9 208,32.8 210,31.5 212,31.3 214,32.2 216,35.6 218,33.2 220,10.0 222,64.0 224,37.0 226,42.9 228,38.9 230,42.6 232,45.3 234,44.0 236,48.2 238,45.7 240,44.4 242,45.4 244,42.7 246,44.4 248,42.4 250,45.2 252,43.6 254,40.3 256,36.2 258,36.2 260,35.0 262,33.8 264,33.2 266,36.5 268,31.9 270,31.4 272,37.0 274,35.4 276,38.9 278,36.4 280,40.6 282,40.4 284,42.6 286,43.6 288,43.3 290,41.9 292,43.4 294,47.9 296,48.4 298,48.5 300,44.7 302,46.0 304,46.0 306,44.0 308,43.9 310,40.8 312,40.3 314,39.2 316,35.5 318,38.3 320,37.7 322,31.8 324,36.9 326,36.8 328,35.3 330,64.0 332,38.0 334,34.4 336,40.7 338,40.1 340,37.8 342,39.8 344,43.8 346,44.5 348,46.4 350,48.1 352,44.2 354,43.0 356,48.3 358,42.3 360,46.7 362,41.2 364,44.2 366,42.7 368,42.0 370,38.7 372,39.4 374,34.3 376,36.2 378,33.5 380,36.5 382,35.6 384,34.0 386,34.8 388,32.6 390,33.6 392,38.1 394,38.7 396,42.3 398,42.1 400,40.5 402,43.0 404,46.3 406,45.6 408,42.9 410,48.0 412,47.8 414,42.9 416,45.0 418,43.1 420,44.4 422,40.3 424,38.5 426,38.7 428,40.3 430,33.9 432,33.1 434,35.4 436,36.5 438,34.1 440,33.7" fill="none" stroke="#c8231a" stroke-width="2" stroke-linejoin="round"></polyline></svg>
+</div>
+<nav aria-label="Secciones" style="margin-top: 10px">
+<ul style="list-style: none; margin: 0; padding: 0">
+<li style="border-top: 2px dotted #1d1b1a"><a href="#que-es" onClick=${v.goQueEs} class="rcpt-link" style="display: flex; align-items: center; gap: 14px; padding: 14px 0; color: #1d1b1a; text-decoration: none"><span style="font-size: 13px; font-weight: 600; width: 28px">01</span><span style="flex: 1; font-family: 'Archivo Black', sans-serif; font-size: clamp(24px, 3.4vw, 34px); line-height: 1; text-transform: uppercase">Qué es</span><span aria-hidden="true" class="rcpt-arrow" style="width: 36px; height: 36px; border-radius: 50%; background: #43c463; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600">↓</span></a></li>
+<li style="border-top: 2px dotted #1d1b1a"><a href="#como-se-juega" onClick=${v.goComo} class="rcpt-link" style="display: flex; align-items: center; gap: 14px; padding: 14px 0; color: #1d1b1a; text-decoration: none"><span style="font-size: 13px; font-weight: 600; width: 28px">02</span><span style="flex: 1; font-family: 'Archivo Black', sans-serif; font-size: clamp(24px, 3.4vw, 34px); line-height: 1; text-transform: uppercase">Cómo se juega</span><span aria-hidden="true" class="rcpt-arrow" style="width: 36px; height: 36px; border-radius: 50%; background: #43c463; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600">↓</span></a></li>
+<li style="border-top: 2px dotted #1d1b1a"><a href="#arboles" onClick=${v.goArboles} class="rcpt-link" style="display: flex; align-items: center; gap: 14px; padding: 14px 0; color: #1d1b1a; text-decoration: none"><span style="font-size: 13px; font-weight: 600; width: 28px">03</span><span style="flex: 1; font-family: 'Archivo Black', sans-serif; font-size: clamp(24px, 3.4vw, 34px); line-height: 1; text-transform: uppercase">Árboles</span><span aria-hidden="true" class="rcpt-arrow" style="width: 36px; height: 36px; border-radius: 50%; background: #43c463; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600">↓</span></a></li>
+<li style="border-top: 2px dotted #1d1b1a"><a href="#ficha" onClick=${v.goFicha} class="rcpt-link" style="display: flex; align-items: center; gap: 14px; padding: 14px 0; color: #1d1b1a; text-decoration: none"><span style="font-size: 13px; font-weight: 600; width: 28px">04</span><span style="flex: 1; font-family: 'Archivo Black', sans-serif; font-size: clamp(24px, 3.4vw, 34px); line-height: 1; text-transform: uppercase">Ficha técnica</span><span aria-hidden="true" class="rcpt-arrow" style="width: 36px; height: 36px; border-radius: 50%; background: #43c463; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600">↓</span></a></li>
+<li style="border-top: 2px dotted #1d1b1a"><a href="#quienes-somos" onClick=${v.closeMenu} class="rcpt-link" style="display: flex; align-items: center; gap: 14px; padding: 14px 0; color: #1d1b1a; text-decoration: none"><span style="font-size: 13px; font-weight: 600; width: 28px">05</span><span style="flex: 1; font-family: 'Archivo Black', sans-serif; font-size: clamp(24px, 3.4vw, 34px); line-height: 1; text-transform: uppercase">Quiénes somos</span><span aria-hidden="true" class="rcpt-arrow" style="width: 36px; height: 36px; border-radius: 50%; background: #43c463; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600">↗</span></a></li>
+</ul>
+</nav>
+<div style="border-top: 2px dashed #1d1b1a; margin-top: 4px; padding-top: 12px; font-size: 13px; display: flex; flex-direction: column; gap: 4px">
+<div style="display: flex; gap: 8px"><span>NIVEL DE DOPAMINA</span><span style="flex: 1; border-bottom: 2px dotted #1d1b1a; transform: translateY(-4px)"></span><span style="font-weight: 600">ALTO</span></div>
+<div style="display: flex; gap: 8px"><span>PRÓXIMA DOSIS</span><span style="flex: 1; border-bottom: 2px dotted #1d1b1a; transform: translateY(-4px)"></span><span style="font-weight: 600">AHORA</span></div>
+</div>
+<div aria-hidden="true" style="margin: 16px auto 6px; height: 46px; width: 80%; background-image: repeating-linear-gradient(90deg, #1d1b1a 0 2px, transparent 2px 4px, #1d1b1a 4px 7px, transparent 7px 9px, #1d1b1a 9px 10px, transparent 10px 14px, #1d1b1a 14px 17px, transparent 17px 19px)"></div>
+<p style="margin: 0; text-align: center; font-size: 12px; letter-spacing: 0.1em">*** GRACIAS POR JUGAR ***</p>
+</div>
+<div aria-hidden="true" class="rcpt-body zig paperbg" style="width: calc(100% - 150px); height: 13px"></div>
+<button type="button" onPointerDown=${v.tabDown} onClick=${v.toggleMenu} aria-expanded=${v.menuOpen} aria-controls="dmx-menu" class="rcpt-tab" style="position: absolute; right: 0; top: calc(100% - 12px); width: 150px; padding: 0; background: transparent; border: 0; cursor: grab; touch-action: none; color: #1d1b1a; font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 14px; letter-spacing: 0.08em; filter: drop-shadow(0 6px 6px rgba(0,0,0,.22))"><span class="paperbg" style="display: block; padding: 12px 12px 10px; margin-top: -1px"><span style="display: block; border-top: 2px dotted #1d1b1a; padding-top: 8px">${v.tabLabel}</span></span><span aria-hidden="true" class="zig paperbg" style="display: block; height: 13px"></span></button>
+</div>
+
+
+<header style="position: relative; background-color: #2e8f8a; background-image: radial-gradient(rgba(0,0,0,.08) 1px, transparent 1.4px); background-size: 5px 5px; padding: 0 24px clamp(56px, 8vw, 96px); overflow: hidden">
+<svg aria-hidden="true" viewBox="0 0 560 350" preserveAspectRatio="xMidYMax meet" class="drop" style="display: block; width: min(100%, 900px); height: auto; margin: 0 auto"><path d="M 4.0 0.0 L 10.3 5.0 L 16.4 10.0 L 22.4 15.0 L 28.3 20.0 L 34.0 25.0 L 39.6 30.0 L 45.0 35.0 L 50.3 40.0 L 55.4 45.0 L 60.4 50.0 L 65.3 55.0 L 70.1 60.0 L 74.8 65.0 L 79.3 70.0 L 83.7 75.0 L 88.0 80.0 L 92.3 85.0 L 96.4 90.0 L 100.4 95.0 L 104.2 100.0 L 108.0 105.0 L 111.8 110.0 L 115.4 115.0 L 118.9 120.0 L 122.3 125.0 L 125.7 130.0 L 128.9 135.0 L 132.1 140.0 L 135.2 145.0 L 138.2 150.0 L 141.2 155.0 L 144.1 160.0 L 146.9 165.0 L 149.6 170.0 L 152.3 175.0 L 154.9 180.0 L 157.4 185.0 L 159.9 190.0 L 162.3 195.0 L 164.6 200.0 L 166.9 205.0 L 169.1 210.0 L 171.3 215.0 L 173.4 220.0 L 175.5 225.0 L 177.5 230.0 L 179.5 235.0 L 181.4 240.0 L 183.2 245.0 L 185.1 250.0 L 186.8 255.0 L 188.6 260.0 L 190.3 265.0 L 191.9 270.0 L 193.5 275.0 L 195.1 280.0 L 196.6 285.0 L 198.1 290.0 L 199.5 295.0 L 200.9 300.0 L 202.3 305.0 L 203.7 310.0 L 205.0 315.0 L 206.2 320.0 L 207.5 325.0 L 208.7 330.0 L 209.9 335.0 L 211.0 340.0 L 212.2 345.0 L 213.2 350.0 L 225.4 350.0 L 224.5 345.0 L 223.6 340.0 L 222.6 335.0 L 221.7 330.0 L 220.7 325.0 L 219.6 320.0 L 218.6 315.0 L 217.5 310.0 L 216.4 305.0 L 215.3 300.0 L 214.2 295.0 L 213.0 290.0 L 211.8 285.0 L 210.5 280.0 L 209.2 275.0 L 207.9 270.0 L 206.6 265.0 L 205.2 260.0 L 203.8 255.0 L 202.3 250.0 L 200.8 245.0 L 199.3 240.0 L 197.7 235.0 L 196.1 230.0 L 194.5 225.0 L 192.8 220.0 L 191.1 215.0 L 189.3 210.0 L 187.5 205.0 L 185.6 200.0 L 183.7 195.0 L 181.7 190.0 L 179.7 185.0 L 177.6 180.0 L 175.5 175.0 L 173.3 170.0 L 171.1 165.0 L 168.8 160.0 L 166.4 155.0 L 164.0 150.0 L 161.5 145.0 L 159.0 140.0 L 156.4 135.0 L 153.7 130.0 L 151.0 125.0 L 148.2 120.0 L 145.3 115.0 L 142.3 110.0 L 139.3 105.0 L 136.2 100.0 L 133.0 95.0 L 129.7 90.0 L 126.4 85.0 L 122.9 80.0 L 119.4 75.0 L 115.8 70.0 L 112.1 65.0 L 108.3 60.0 L 104.4 55.0 L 100.4 50.0 L 96.3 45.0 L 92.0 40.0 L 87.7 35.0 L 83.3 30.0 L 78.7 25.0 L 74.1 20.0 L 69.3 15.0 L 64.4 10.0 L 59.3 5.0 L 54.2 0.0 Z" fill="#5b1410"></path><path d="M 54.2 0.0 L 59.3 5.0 L 64.4 10.0 L 69.3 15.0 L 74.1 20.0 L 78.7 25.0 L 83.3 30.0 L 87.7 35.0 L 92.0 40.0 L 96.3 45.0 L 100.4 50.0 L 104.4 55.0 L 108.3 60.0 L 112.1 65.0 L 115.8 70.0 L 119.4 75.0 L 122.9 80.0 L 126.4 85.0 L 129.7 90.0 L 133.0 95.0 L 136.2 100.0 L 139.3 105.0 L 142.3 110.0 L 145.3 115.0 L 148.2 120.0 L 151.0 125.0 L 153.7 130.0 L 156.4 135.0 L 159.0 140.0 L 161.5 145.0 L 164.0 150.0 L 166.4 155.0 L 168.8 160.0 L 171.1 165.0 L 173.3 170.0 L 175.5 175.0 L 177.6 180.0 L 179.7 185.0 L 181.7 190.0 L 183.7 195.0 L 185.6 200.0 L 187.5 205.0 L 189.3 210.0 L 191.1 215.0 L 192.8 220.0 L 194.5 225.0 L 196.1 230.0 L 197.7 235.0 L 199.3 240.0 L 200.8 245.0 L 202.3 250.0 L 203.8 255.0 L 205.2 260.0 L 206.6 265.0 L 207.9 270.0 L 209.2 275.0 L 210.5 280.0 L 211.8 285.0 L 213.0 290.0 L 214.2 295.0 L 215.3 300.0 L 216.4 305.0 L 217.5 310.0 L 218.6 315.0 L 219.6 320.0 L 220.7 325.0 L 221.7 330.0 L 222.6 335.0 L 223.6 340.0 L 224.5 345.0 L 225.4 350.0 L 237.5 350.0 L 236.8 345.0 L 236.1 340.0 L 235.4 335.0 L 234.6 330.0 L 233.9 325.0 L 233.1 320.0 L 232.2 315.0 L 231.4 310.0 L 230.6 305.0 L 229.7 300.0 L 228.8 295.0 L 227.9 290.0 L 226.9 285.0 L 226.0 280.0 L 225.0 275.0 L 223.9 270.0 L 222.9 265.0 L 221.8 260.0 L 220.7 255.0 L 219.6 250.0 L 218.4 245.0 L 217.2 240.0 L 216.0 235.0 L 214.8 230.0 L 213.5 225.0 L 212.2 220.0 L 210.8 215.0 L 209.4 210.0 L 208.0 205.0 L 206.6 200.0 L 205.1 195.0 L 203.5 190.0 L 202.0 185.0 L 200.4 180.0 L 198.7 175.0 L 197.0 170.0 L 195.3 165.0 L 193.5 160.0 L 191.7 155.0 L 189.8 150.0 L 187.9 145.0 L 185.9 140.0 L 183.9 135.0 L 181.8 130.0 L 179.7 125.0 L 177.5 120.0 L 175.2 115.0 L 172.9 110.0 L 170.6 105.0 L 168.2 100.0 L 165.7 95.0 L 163.1 90.0 L 160.5 85.0 L 157.8 80.0 L 155.1 75.0 L 152.3 70.0 L 149.4 65.0 L 146.4 60.0 L 143.4 55.0 L 140.3 50.0 L 137.1 45.0 L 133.8 40.0 L 130.4 35.0 L 127.0 30.0 L 123.5 25.0 L 119.8 20.0 L 116.1 15.0 L 112.3 10.0 L 108.4 5.0 L 104.4 0.0 Z" fill="#8e1610"></path><path d="M 104.4 0.0 L 108.4 5.0 L 112.3 10.0 L 116.1 15.0 L 119.8 20.0 L 123.5 25.0 L 127.0 30.0 L 130.4 35.0 L 133.8 40.0 L 137.1 45.0 L 140.3 50.0 L 143.4 55.0 L 146.4 60.0 L 149.4 65.0 L 152.3 70.0 L 155.1 75.0 L 157.8 80.0 L 160.5 85.0 L 163.1 90.0 L 165.7 95.0 L 168.2 100.0 L 170.6 105.0 L 172.9 110.0 L 175.2 115.0 L 177.5 120.0 L 179.7 125.0 L 181.8 130.0 L 183.9 135.0 L 185.9 140.0 L 187.9 145.0 L 189.8 150.0 L 191.7 155.0 L 193.5 160.0 L 195.3 165.0 L 197.0 170.0 L 198.7 175.0 L 200.4 180.0 L 202.0 185.0 L 203.5 190.0 L 205.1 195.0 L 206.6 200.0 L 208.0 205.0 L 209.4 210.0 L 210.8 215.0 L 212.2 220.0 L 213.5 225.0 L 214.8 230.0 L 216.0 235.0 L 217.2 240.0 L 218.4 245.0 L 219.6 250.0 L 220.7 255.0 L 221.8 260.0 L 222.9 265.0 L 223.9 270.0 L 225.0 275.0 L 226.0 280.0 L 226.9 285.0 L 227.9 290.0 L 228.8 295.0 L 229.7 300.0 L 230.6 305.0 L 231.4 310.0 L 232.2 315.0 L 233.1 320.0 L 233.9 325.0 L 234.6 330.0 L 235.4 335.0 L 236.1 340.0 L 236.8 345.0 L 237.5 350.0 L 249.7 350.0 L 249.2 345.0 L 248.6 340.0 L 248.1 335.0 L 247.6 330.0 L 247.0 325.0 L 246.5 320.0 L 245.9 315.0 L 245.3 310.0 L 244.7 305.0 L 244.1 300.0 L 243.4 295.0 L 242.8 290.0 L 242.1 285.0 L 241.4 280.0 L 240.7 275.0 L 240.0 270.0 L 239.2 265.0 L 238.4 260.0 L 237.7 255.0 L 236.8 250.0 L 236.0 245.0 L 235.2 240.0 L 234.3 235.0 L 233.4 230.0 L 232.5 225.0 L 231.6 220.0 L 230.6 215.0 L 229.6 210.0 L 228.6 205.0 L 227.5 200.0 L 226.5 195.0 L 225.4 190.0 L 224.3 185.0 L 223.1 180.0 L 221.9 175.0 L 220.7 170.0 L 219.5 165.0 L 218.2 160.0 L 216.9 155.0 L 215.6 150.0 L 214.2 145.0 L 212.8 140.0 L 211.3 135.0 L 209.8 130.0 L 208.3 125.0 L 206.8 120.0 L 205.2 115.0 L 203.5 110.0 L 201.8 105.0 L 200.1 100.0 L 198.3 95.0 L 196.5 90.0 L 194.7 85.0 L 192.7 80.0 L 190.8 75.0 L 188.8 70.0 L 186.7 65.0 L 184.6 60.0 L 182.4 55.0 L 180.2 50.0 L 177.9 45.0 L 175.6 40.0 L 173.2 35.0 L 170.7 30.0 L 168.2 25.0 L 165.6 20.0 L 162.9 15.0 L 160.2 10.0 L 157.4 5.0 L 154.5 0.0 Z" fill="#c8231a"></path><path d="M 154.5 0.0 L 157.4 5.0 L 160.2 10.0 L 162.9 15.0 L 165.6 20.0 L 168.2 25.0 L 170.7 30.0 L 173.2 35.0 L 175.6 40.0 L 177.9 45.0 L 180.2 50.0 L 182.4 55.0 L 184.6 60.0 L 186.7 65.0 L 188.8 70.0 L 190.8 75.0 L 192.7 80.0 L 194.7 85.0 L 196.5 90.0 L 198.3 95.0 L 200.1 100.0 L 201.8 105.0 L 203.5 110.0 L 205.2 115.0 L 206.8 120.0 L 208.3 125.0 L 209.8 130.0 L 211.3 135.0 L 212.8 140.0 L 214.2 145.0 L 215.6 150.0 L 216.9 155.0 L 218.2 160.0 L 219.5 165.0 L 220.7 170.0 L 221.9 175.0 L 223.1 180.0 L 224.3 185.0 L 225.4 190.0 L 226.5 195.0 L 227.5 200.0 L 228.6 205.0 L 229.6 210.0 L 230.6 215.0 L 231.6 220.0 L 232.5 225.0 L 233.4 230.0 L 234.3 235.0 L 235.2 240.0 L 236.0 245.0 L 236.8 250.0 L 237.7 255.0 L 238.4 260.0 L 239.2 265.0 L 240.0 270.0 L 240.7 275.0 L 241.4 280.0 L 242.1 285.0 L 242.8 290.0 L 243.4 295.0 L 244.1 300.0 L 244.7 305.0 L 245.3 310.0 L 245.9 315.0 L 246.5 320.0 L 247.0 325.0 L 247.6 330.0 L 248.1 335.0 L 248.6 340.0 L 249.2 345.0 L 249.7 350.0 L 261.8 350.0 L 261.5 345.0 L 261.2 340.0 L 260.9 335.0 L 260.6 330.0 L 260.2 325.0 L 259.9 320.0 L 259.5 315.0 L 259.2 310.0 L 258.8 305.0 L 258.4 300.0 L 258.1 295.0 L 257.7 290.0 L 257.3 285.0 L 256.8 280.0 L 256.4 275.0 L 256.0 270.0 L 255.5 265.0 L 255.1 260.0 L 254.6 255.0 L 254.1 250.0 L 253.6 245.0 L 253.1 240.0 L 252.6 235.0 L 252.0 230.0 L 251.5 225.0 L 250.9 220.0 L 250.4 215.0 L 249.8 210.0 L 249.2 205.0 L 248.5 200.0 L 247.9 195.0 L 247.2 190.0 L 246.6 185.0 L 245.9 180.0 L 245.2 175.0 L 244.4 170.0 L 243.7 165.0 L 242.9 160.0 L 242.1 155.0 L 241.3 150.0 L 240.5 145.0 L 239.7 140.0 L 238.8 135.0 L 237.9 130.0 L 237.0 125.0 L 236.1 120.0 L 235.1 115.0 L 234.1 110.0 L 233.1 105.0 L 232.1 100.0 L 231.0 95.0 L 229.9 90.0 L 228.8 85.0 L 227.6 80.0 L 226.5 75.0 L 225.3 70.0 L 224.0 65.0 L 222.8 60.0 L 221.5 55.0 L 220.1 50.0 L 218.8 45.0 L 217.3 40.0 L 215.9 35.0 L 214.4 30.0 L 212.9 25.0 L 211.4 20.0 L 209.8 15.0 L 208.1 10.0 L 206.4 5.0 L 204.7 0.0 Z" fill="#e0391e"></path><path d="M 204.7 0.0 L 206.4 5.0 L 208.1 10.0 L 209.8 15.0 L 211.4 20.0 L 212.9 25.0 L 214.4 30.0 L 215.9 35.0 L 217.3 40.0 L 218.8 45.0 L 220.1 50.0 L 221.5 55.0 L 222.8 60.0 L 224.0 65.0 L 225.3 70.0 L 226.5 75.0 L 227.6 80.0 L 228.8 85.0 L 229.9 90.0 L 231.0 95.0 L 232.1 100.0 L 233.1 105.0 L 234.1 110.0 L 235.1 115.0 L 236.1 120.0 L 237.0 125.0 L 237.9 130.0 L 238.8 135.0 L 239.7 140.0 L 240.5 145.0 L 241.3 150.0 L 242.1 155.0 L 242.9 160.0 L 243.7 165.0 L 244.4 170.0 L 245.2 175.0 L 245.9 180.0 L 246.6 185.0 L 247.2 190.0 L 247.9 195.0 L 248.5 200.0 L 249.2 205.0 L 249.8 210.0 L 250.4 215.0 L 250.9 220.0 L 251.5 225.0 L 252.0 230.0 L 252.6 235.0 L 253.1 240.0 L 253.6 245.0 L 254.1 250.0 L 254.6 255.0 L 255.1 260.0 L 255.5 265.0 L 256.0 270.0 L 256.4 275.0 L 256.8 280.0 L 257.3 285.0 L 257.7 290.0 L 258.1 295.0 L 258.4 300.0 L 258.8 305.0 L 259.2 310.0 L 259.5 315.0 L 259.9 320.0 L 260.2 325.0 L 260.6 330.0 L 260.9 335.0 L 261.2 340.0 L 261.5 345.0 L 261.8 350.0 L 273.9 350.0 L 273.8 345.0 L 273.7 340.0 L 273.6 335.0 L 273.5 330.0 L 273.4 325.0 L 273.3 320.0 L 273.2 315.0 L 273.1 310.0 L 272.9 305.0 L 272.8 300.0 L 272.7 295.0 L 272.6 290.0 L 272.4 285.0 L 272.3 280.0 L 272.1 275.0 L 272.0 270.0 L 271.8 265.0 L 271.7 260.0 L 271.5 255.0 L 271.4 250.0 L 271.2 245.0 L 271.0 240.0 L 270.9 235.0 L 270.7 230.0 L 270.5 225.0 L 270.3 220.0 L 270.1 215.0 L 269.9 210.0 L 269.7 205.0 L 269.5 200.0 L 269.3 195.0 L 269.1 190.0 L 268.9 185.0 L 268.6 180.0 L 268.4 175.0 L 268.1 170.0 L 267.9 165.0 L 267.6 160.0 L 267.4 155.0 L 267.1 150.0 L 266.8 145.0 L 266.6 140.0 L 266.3 135.0 L 266.0 130.0 L 265.7 125.0 L 265.4 120.0 L 265.0 115.0 L 264.7 110.0 L 264.4 105.0 L 264.0 100.0 L 263.7 95.0 L 263.3 90.0 L 262.9 85.0 L 262.5 80.0 L 262.2 75.0 L 261.8 70.0 L 261.3 65.0 L 260.9 60.0 L 260.5 55.0 L 260.0 50.0 L 259.6 45.0 L 259.1 40.0 L 258.6 35.0 L 258.1 30.0 L 257.6 25.0 L 257.1 20.0 L 256.6 15.0 L 256.0 10.0 L 255.5 5.0 L 254.9 0.0 Z" fill="#e8641e"></path><path d="M 254.9 0.0 L 255.5 5.0 L 256.0 10.0 L 256.6 15.0 L 257.1 20.0 L 257.6 25.0 L 258.1 30.0 L 258.6 35.0 L 259.1 40.0 L 259.6 45.0 L 260.0 50.0 L 260.5 55.0 L 260.9 60.0 L 261.3 65.0 L 261.8 70.0 L 262.2 75.0 L 262.5 80.0 L 262.9 85.0 L 263.3 90.0 L 263.7 95.0 L 264.0 100.0 L 264.4 105.0 L 264.7 110.0 L 265.0 115.0 L 265.4 120.0 L 265.7 125.0 L 266.0 130.0 L 266.3 135.0 L 266.6 140.0 L 266.8 145.0 L 267.1 150.0 L 267.4 155.0 L 267.6 160.0 L 267.9 165.0 L 268.1 170.0 L 268.4 175.0 L 268.6 180.0 L 268.9 185.0 L 269.1 190.0 L 269.3 195.0 L 269.5 200.0 L 269.7 205.0 L 269.9 210.0 L 270.1 215.0 L 270.3 220.0 L 270.5 225.0 L 270.7 230.0 L 270.9 235.0 L 271.0 240.0 L 271.2 245.0 L 271.4 250.0 L 271.5 255.0 L 271.7 260.0 L 271.8 265.0 L 272.0 270.0 L 272.1 275.0 L 272.3 280.0 L 272.4 285.0 L 272.6 290.0 L 272.7 295.0 L 272.8 300.0 L 272.9 305.0 L 273.1 310.0 L 273.2 315.0 L 273.3 320.0 L 273.4 325.0 L 273.5 330.0 L 273.6 335.0 L 273.7 340.0 L 273.8 345.0 L 273.9 350.0 L 286.1 350.0 L 286.2 345.0 L 286.3 340.0 L 286.4 335.0 L 286.5 330.0 L 286.6 325.0 L 286.7 320.0 L 286.8 315.0 L 286.9 310.0 L 287.1 305.0 L 287.2 300.0 L 287.3 295.0 L 287.4 290.0 L 287.6 285.0 L 287.7 280.0 L 287.9 275.0 L 288.0 270.0 L 288.2 265.0 L 288.3 260.0 L 288.5 255.0 L 288.6 250.0 L 288.8 245.0 L 289.0 240.0 L 289.1 235.0 L 289.3 230.0 L 289.5 225.0 L 289.7 220.0 L 289.9 215.0 L 290.1 210.0 L 290.3 205.0 L 290.5 200.0 L 290.7 195.0 L 290.9 190.0 L 291.1 185.0 L 291.4 180.0 L 291.6 175.0 L 291.9 170.0 L 292.1 165.0 L 292.4 160.0 L 292.6 155.0 L 292.9 150.0 L 293.2 145.0 L 293.4 140.0 L 293.7 135.0 L 294.0 130.0 L 294.3 125.0 L 294.6 120.0 L 295.0 115.0 L 295.3 110.0 L 295.6 105.0 L 296.0 100.0 L 296.3 95.0 L 296.7 90.0 L 297.1 85.0 L 297.5 80.0 L 297.8 75.0 L 298.2 70.0 L 298.7 65.0 L 299.1 60.0 L 299.5 55.0 L 300.0 50.0 L 300.4 45.0 L 300.9 40.0 L 301.4 35.0 L 301.9 30.0 L 302.4 25.0 L 302.9 20.0 L 303.4 15.0 L 304.0 10.0 L 304.5 5.0 L 305.1 0.0 Z" fill="#f2b134"></path><path d="M 305.1 0.0 L 304.5 5.0 L 304.0 10.0 L 303.4 15.0 L 302.9 20.0 L 302.4 25.0 L 301.9 30.0 L 301.4 35.0 L 300.9 40.0 L 300.4 45.0 L 300.0 50.0 L 299.5 55.0 L 299.1 60.0 L 298.7 65.0 L 298.2 70.0 L 297.8 75.0 L 297.5 80.0 L 297.1 85.0 L 296.7 90.0 L 296.3 95.0 L 296.0 100.0 L 295.6 105.0 L 295.3 110.0 L 295.0 115.0 L 294.6 120.0 L 294.3 125.0 L 294.0 130.0 L 293.7 135.0 L 293.4 140.0 L 293.2 145.0 L 292.9 150.0 L 292.6 155.0 L 292.4 160.0 L 292.1 165.0 L 291.9 170.0 L 291.6 175.0 L 291.4 180.0 L 291.1 185.0 L 290.9 190.0 L 290.7 195.0 L 290.5 200.0 L 290.3 205.0 L 290.1 210.0 L 289.9 215.0 L 289.7 220.0 L 289.5 225.0 L 289.3 230.0 L 289.1 235.0 L 289.0 240.0 L 288.8 245.0 L 288.6 250.0 L 288.5 255.0 L 288.3 260.0 L 288.2 265.0 L 288.0 270.0 L 287.9 275.0 L 287.7 280.0 L 287.6 285.0 L 287.4 290.0 L 287.3 295.0 L 287.2 300.0 L 287.1 305.0 L 286.9 310.0 L 286.8 315.0 L 286.7 320.0 L 286.6 325.0 L 286.5 330.0 L 286.4 335.0 L 286.3 340.0 L 286.2 345.0 L 286.1 350.0 L 298.2 350.0 L 298.5 345.0 L 298.8 340.0 L 299.1 335.0 L 299.4 330.0 L 299.8 325.0 L 300.1 320.0 L 300.5 315.0 L 300.8 310.0 L 301.2 305.0 L 301.6 300.0 L 301.9 295.0 L 302.3 290.0 L 302.7 285.0 L 303.2 280.0 L 303.6 275.0 L 304.0 270.0 L 304.5 265.0 L 304.9 260.0 L 305.4 255.0 L 305.9 250.0 L 306.4 245.0 L 306.9 240.0 L 307.4 235.0 L 308.0 230.0 L 308.5 225.0 L 309.1 220.0 L 309.6 215.0 L 310.2 210.0 L 310.8 205.0 L 311.5 200.0 L 312.1 195.0 L 312.8 190.0 L 313.4 185.0 L 314.1 180.0 L 314.8 175.0 L 315.6 170.0 L 316.3 165.0 L 317.1 160.0 L 317.9 155.0 L 318.7 150.0 L 319.5 145.0 L 320.3 140.0 L 321.2 135.0 L 322.1 130.0 L 323.0 125.0 L 323.9 120.0 L 324.9 115.0 L 325.9 110.0 L 326.9 105.0 L 327.9 100.0 L 329.0 95.0 L 330.1 90.0 L 331.2 85.0 L 332.4 80.0 L 333.5 75.0 L 334.7 70.0 L 336.0 65.0 L 337.2 60.0 L 338.5 55.0 L 339.9 50.0 L 341.2 45.0 L 342.7 40.0 L 344.1 35.0 L 345.6 30.0 L 347.1 25.0 L 348.6 20.0 L 350.2 15.0 L 351.9 10.0 L 353.6 5.0 L 355.3 0.0 Z" fill="#e8641e"></path><path d="M 355.3 0.0 L 353.6 5.0 L 351.9 10.0 L 350.2 15.0 L 348.6 20.0 L 347.1 25.0 L 345.6 30.0 L 344.1 35.0 L 342.7 40.0 L 341.2 45.0 L 339.9 50.0 L 338.5 55.0 L 337.2 60.0 L 336.0 65.0 L 334.7 70.0 L 333.5 75.0 L 332.4 80.0 L 331.2 85.0 L 330.1 90.0 L 329.0 95.0 L 327.9 100.0 L 326.9 105.0 L 325.9 110.0 L 324.9 115.0 L 323.9 120.0 L 323.0 125.0 L 322.1 130.0 L 321.2 135.0 L 320.3 140.0 L 319.5 145.0 L 318.7 150.0 L 317.9 155.0 L 317.1 160.0 L 316.3 165.0 L 315.6 170.0 L 314.8 175.0 L 314.1 180.0 L 313.4 185.0 L 312.8 190.0 L 312.1 195.0 L 311.5 200.0 L 310.8 205.0 L 310.2 210.0 L 309.6 215.0 L 309.1 220.0 L 308.5 225.0 L 308.0 230.0 L 307.4 235.0 L 306.9 240.0 L 306.4 245.0 L 305.9 250.0 L 305.4 255.0 L 304.9 260.0 L 304.5 265.0 L 304.0 270.0 L 303.6 275.0 L 303.2 280.0 L 302.7 285.0 L 302.3 290.0 L 301.9 295.0 L 301.6 300.0 L 301.2 305.0 L 300.8 310.0 L 300.5 315.0 L 300.1 320.0 L 299.8 325.0 L 299.4 330.0 L 299.1 335.0 L 298.8 340.0 L 298.5 345.0 L 298.2 350.0 L 310.3 350.0 L 310.8 345.0 L 311.4 340.0 L 311.9 335.0 L 312.4 330.0 L 313.0 325.0 L 313.5 320.0 L 314.1 315.0 L 314.7 310.0 L 315.3 305.0 L 315.9 300.0 L 316.6 295.0 L 317.2 290.0 L 317.9 285.0 L 318.6 280.0 L 319.3 275.0 L 320.0 270.0 L 320.8 265.0 L 321.6 260.0 L 322.3 255.0 L 323.2 250.0 L 324.0 245.0 L 324.8 240.0 L 325.7 235.0 L 326.6 230.0 L 327.5 225.0 L 328.4 220.0 L 329.4 215.0 L 330.4 210.0 L 331.4 205.0 L 332.5 200.0 L 333.5 195.0 L 334.6 190.0 L 335.7 185.0 L 336.9 180.0 L 338.1 175.0 L 339.3 170.0 L 340.5 165.0 L 341.8 160.0 L 343.1 155.0 L 344.4 150.0 L 345.8 145.0 L 347.2 140.0 L 348.7 135.0 L 350.2 130.0 L 351.7 125.0 L 353.2 120.0 L 354.8 115.0 L 356.5 110.0 L 358.2 105.0 L 359.9 100.0 L 361.7 95.0 L 363.5 90.0 L 365.3 85.0 L 367.3 80.0 L 369.2 75.0 L 371.2 70.0 L 373.3 65.0 L 375.4 60.0 L 377.6 55.0 L 379.8 50.0 L 382.1 45.0 L 384.4 40.0 L 386.8 35.0 L 389.3 30.0 L 391.8 25.0 L 394.4 20.0 L 397.1 15.0 L 399.8 10.0 L 402.6 5.0 L 405.5 0.0 Z" fill="#e0391e"></path><path d="M 405.5 0.0 L 402.6 5.0 L 399.8 10.0 L 397.1 15.0 L 394.4 20.0 L 391.8 25.0 L 389.3 30.0 L 386.8 35.0 L 384.4 40.0 L 382.1 45.0 L 379.8 50.0 L 377.6 55.0 L 375.4 60.0 L 373.3 65.0 L 371.2 70.0 L 369.2 75.0 L 367.3 80.0 L 365.3 85.0 L 363.5 90.0 L 361.7 95.0 L 359.9 100.0 L 358.2 105.0 L 356.5 110.0 L 354.8 115.0 L 353.2 120.0 L 351.7 125.0 L 350.2 130.0 L 348.7 135.0 L 347.2 140.0 L 345.8 145.0 L 344.4 150.0 L 343.1 155.0 L 341.8 160.0 L 340.5 165.0 L 339.3 170.0 L 338.1 175.0 L 336.9 180.0 L 335.7 185.0 L 334.6 190.0 L 333.5 195.0 L 332.5 200.0 L 331.4 205.0 L 330.4 210.0 L 329.4 215.0 L 328.4 220.0 L 327.5 225.0 L 326.6 230.0 L 325.7 235.0 L 324.8 240.0 L 324.0 245.0 L 323.2 250.0 L 322.3 255.0 L 321.6 260.0 L 320.8 265.0 L 320.0 270.0 L 319.3 275.0 L 318.6 280.0 L 317.9 285.0 L 317.2 290.0 L 316.6 295.0 L 315.9 300.0 L 315.3 305.0 L 314.7 310.0 L 314.1 315.0 L 313.5 320.0 L 313.0 325.0 L 312.4 330.0 L 311.9 335.0 L 311.4 340.0 L 310.8 345.0 L 310.3 350.0 L 322.5 350.0 L 323.2 345.0 L 323.9 340.0 L 324.6 335.0 L 325.4 330.0 L 326.1 325.0 L 326.9 320.0 L 327.8 315.0 L 328.6 310.0 L 329.4 305.0 L 330.3 300.0 L 331.2 295.0 L 332.1 290.0 L 333.1 285.0 L 334.0 280.0 L 335.0 275.0 L 336.1 270.0 L 337.1 265.0 L 338.2 260.0 L 339.3 255.0 L 340.4 250.0 L 341.6 245.0 L 342.8 240.0 L 344.0 235.0 L 345.2 230.0 L 346.5 225.0 L 347.8 220.0 L 349.2 215.0 L 350.6 210.0 L 352.0 205.0 L 353.4 200.0 L 354.9 195.0 L 356.5 190.0 L 358.0 185.0 L 359.6 180.0 L 361.3 175.0 L 363.0 170.0 L 364.7 165.0 L 366.5 160.0 L 368.3 155.0 L 370.2 150.0 L 372.1 145.0 L 374.1 140.0 L 376.1 135.0 L 378.2 130.0 L 380.3 125.0 L 382.5 120.0 L 384.8 115.0 L 387.1 110.0 L 389.4 105.0 L 391.8 100.0 L 394.3 95.0 L 396.9 90.0 L 399.5 85.0 L 402.2 80.0 L 404.9 75.0 L 407.7 70.0 L 410.6 65.0 L 413.6 60.0 L 416.6 55.0 L 419.7 50.0 L 422.9 45.0 L 426.2 40.0 L 429.6 35.0 L 433.0 30.0 L 436.5 25.0 L 440.2 20.0 L 443.9 15.0 L 447.7 10.0 L 451.6 5.0 L 455.6 0.0 Z" fill="#c8231a"></path><path d="M 455.6 0.0 L 451.6 5.0 L 447.7 10.0 L 443.9 15.0 L 440.2 20.0 L 436.5 25.0 L 433.0 30.0 L 429.6 35.0 L 426.2 40.0 L 422.9 45.0 L 419.7 50.0 L 416.6 55.0 L 413.6 60.0 L 410.6 65.0 L 407.7 70.0 L 404.9 75.0 L 402.2 80.0 L 399.5 85.0 L 396.9 90.0 L 394.3 95.0 L 391.8 100.0 L 389.4 105.0 L 387.1 110.0 L 384.8 115.0 L 382.5 120.0 L 380.3 125.0 L 378.2 130.0 L 376.1 135.0 L 374.1 140.0 L 372.1 145.0 L 370.2 150.0 L 368.3 155.0 L 366.5 160.0 L 364.7 165.0 L 363.0 170.0 L 361.3 175.0 L 359.6 180.0 L 358.0 185.0 L 356.5 190.0 L 354.9 195.0 L 353.4 200.0 L 352.0 205.0 L 350.6 210.0 L 349.2 215.0 L 347.8 220.0 L 346.5 225.0 L 345.2 230.0 L 344.0 235.0 L 342.8 240.0 L 341.6 245.0 L 340.4 250.0 L 339.3 255.0 L 338.2 260.0 L 337.1 265.0 L 336.1 270.0 L 335.0 275.0 L 334.0 280.0 L 333.1 285.0 L 332.1 290.0 L 331.2 295.0 L 330.3 300.0 L 329.4 305.0 L 328.6 310.0 L 327.8 315.0 L 326.9 320.0 L 326.1 325.0 L 325.4 330.0 L 324.6 335.0 L 323.9 340.0 L 323.2 345.0 L 322.5 350.0 L 334.6 350.0 L 335.5 345.0 L 336.4 340.0 L 337.4 335.0 L 338.3 330.0 L 339.3 325.0 L 340.4 320.0 L 341.4 315.0 L 342.5 310.0 L 343.6 305.0 L 344.7 300.0 L 345.8 295.0 L 347.0 290.0 L 348.2 285.0 L 349.5 280.0 L 350.8 275.0 L 352.1 270.0 L 353.4 265.0 L 354.8 260.0 L 356.2 255.0 L 357.7 250.0 L 359.2 245.0 L 360.7 240.0 L 362.3 235.0 L 363.9 230.0 L 365.5 225.0 L 367.2 220.0 L 368.9 215.0 L 370.7 210.0 L 372.5 205.0 L 374.4 200.0 L 376.3 195.0 L 378.3 190.0 L 380.3 185.0 L 382.4 180.0 L 384.5 175.0 L 386.7 170.0 L 388.9 165.0 L 391.2 160.0 L 393.6 155.0 L 396.0 150.0 L 398.5 145.0 L 401.0 140.0 L 403.6 135.0 L 406.3 130.0 L 409.0 125.0 L 411.8 120.0 L 414.7 115.0 L 417.7 110.0 L 420.7 105.0 L 423.8 100.0 L 427.0 95.0 L 430.3 90.0 L 433.6 85.0 L 437.1 80.0 L 440.6 75.0 L 444.2 70.0 L 447.9 65.0 L 451.7 60.0 L 455.6 55.0 L 459.6 50.0 L 463.7 45.0 L 468.0 40.0 L 472.3 35.0 L 476.7 30.0 L 481.3 25.0 L 485.9 20.0 L 490.7 15.0 L 495.6 10.0 L 500.7 5.0 L 505.8 0.0 Z" fill="#8e1610"></path><path d="M 505.8 0.0 L 500.7 5.0 L 495.6 10.0 L 490.7 15.0 L 485.9 20.0 L 481.3 25.0 L 476.7 30.0 L 472.3 35.0 L 468.0 40.0 L 463.7 45.0 L 459.6 50.0 L 455.6 55.0 L 451.7 60.0 L 447.9 65.0 L 444.2 70.0 L 440.6 75.0 L 437.1 80.0 L 433.6 85.0 L 430.3 90.0 L 427.0 95.0 L 423.8 100.0 L 420.7 105.0 L 417.7 110.0 L 414.7 115.0 L 411.8 120.0 L 409.0 125.0 L 406.3 130.0 L 403.6 135.0 L 401.0 140.0 L 398.5 145.0 L 396.0 150.0 L 393.6 155.0 L 391.2 160.0 L 388.9 165.0 L 386.7 170.0 L 384.5 175.0 L 382.4 180.0 L 380.3 185.0 L 378.3 190.0 L 376.3 195.0 L 374.4 200.0 L 372.5 205.0 L 370.7 210.0 L 368.9 215.0 L 367.2 220.0 L 365.5 225.0 L 363.9 230.0 L 362.3 235.0 L 360.7 240.0 L 359.2 245.0 L 357.7 250.0 L 356.2 255.0 L 354.8 260.0 L 353.4 265.0 L 352.1 270.0 L 350.8 275.0 L 349.5 280.0 L 348.2 285.0 L 347.0 290.0 L 345.8 295.0 L 344.7 300.0 L 343.6 305.0 L 342.5 310.0 L 341.4 315.0 L 340.4 320.0 L 339.3 325.0 L 338.3 330.0 L 337.4 335.0 L 336.4 340.0 L 335.5 345.0 L 334.6 350.0 L 346.8 350.0 L 347.8 345.0 L 349.0 340.0 L 350.1 335.0 L 351.3 330.0 L 352.5 325.0 L 353.8 320.0 L 355.0 315.0 L 356.3 310.0 L 357.7 305.0 L 359.1 300.0 L 360.5 295.0 L 361.9 290.0 L 363.4 285.0 L 364.9 280.0 L 366.5 275.0 L 368.1 270.0 L 369.7 265.0 L 371.4 260.0 L 373.2 255.0 L 374.9 250.0 L 376.8 245.0 L 378.6 240.0 L 380.5 235.0 L 382.5 230.0 L 384.5 225.0 L 386.6 220.0 L 388.7 215.0 L 390.9 210.0 L 393.1 205.0 L 395.4 200.0 L 397.7 195.0 L 400.1 190.0 L 402.6 185.0 L 405.1 180.0 L 407.7 175.0 L 410.4 170.0 L 413.1 165.0 L 415.9 160.0 L 418.8 155.0 L 421.8 150.0 L 424.8 145.0 L 427.9 140.0 L 431.1 135.0 L 434.3 130.0 L 437.7 125.0 L 441.1 120.0 L 444.6 115.0 L 448.2 110.0 L 452.0 105.0 L 455.8 100.0 L 459.6 95.0 L 463.6 90.0 L 467.7 85.0 L 472.0 80.0 L 476.3 75.0 L 480.7 70.0 L 485.2 65.0 L 489.9 60.0 L 494.7 55.0 L 499.6 50.0 L 504.6 45.0 L 509.7 40.0 L 515.0 35.0 L 520.4 30.0 L 526.0 25.0 L 531.7 20.0 L 537.6 15.0 L 543.6 10.0 L 549.7 5.0 L 556.0 0.0 Z" fill="#5b1410"></path><defs><clipPath id="dmxFunnel"><path d="M 4.0 0.0 L 10.3 5.0 L 16.4 10.0 L 22.4 15.0 L 28.3 20.0 L 34.0 25.0 L 39.6 30.0 L 45.0 35.0 L 50.3 40.0 L 55.4 45.0 L 60.4 50.0 L 65.3 55.0 L 70.1 60.0 L 74.8 65.0 L 79.3 70.0 L 83.7 75.0 L 88.0 80.0 L 92.3 85.0 L 96.4 90.0 L 100.4 95.0 L 104.2 100.0 L 108.0 105.0 L 111.8 110.0 L 115.4 115.0 L 118.9 120.0 L 122.3 125.0 L 125.7 130.0 L 128.9 135.0 L 132.1 140.0 L 135.2 145.0 L 138.2 150.0 L 141.2 155.0 L 144.1 160.0 L 146.9 165.0 L 149.6 170.0 L 152.3 175.0 L 154.9 180.0 L 157.4 185.0 L 159.9 190.0 L 162.3 195.0 L 164.6 200.0 L 166.9 205.0 L 169.1 210.0 L 171.3 215.0 L 173.4 220.0 L 175.5 225.0 L 177.5 230.0 L 179.5 235.0 L 181.4 240.0 L 183.2 245.0 L 185.1 250.0 L 186.8 255.0 L 188.6 260.0 L 190.3 265.0 L 191.9 270.0 L 193.5 275.0 L 195.1 280.0 L 196.6 285.0 L 198.1 290.0 L 199.5 295.0 L 200.9 300.0 L 202.3 305.0 L 203.7 310.0 L 205.0 315.0 L 206.2 320.0 L 207.5 325.0 L 208.7 330.0 L 209.9 335.0 L 211.0 340.0 L 212.2 345.0 L 213.2 350.0 L 346.8 350.0 L 347.8 345.0 L 349.0 340.0 L 350.1 335.0 L 351.3 330.0 L 352.5 325.0 L 353.8 320.0 L 355.0 315.0 L 356.3 310.0 L 357.7 305.0 L 359.1 300.0 L 360.5 295.0 L 361.9 290.0 L 363.4 285.0 L 364.9 280.0 L 366.5 275.0 L 368.1 270.0 L 369.7 265.0 L 371.4 260.0 L 373.2 255.0 L 374.9 250.0 L 376.8 245.0 L 378.6 240.0 L 380.5 235.0 L 382.5 230.0 L 384.5 225.0 L 386.6 220.0 L 388.7 215.0 L 390.9 210.0 L 393.1 205.0 L 395.4 200.0 L 397.7 195.0 L 400.1 190.0 L 402.6 185.0 L 405.1 180.0 L 407.7 175.0 L 410.4 170.0 L 413.1 165.0 L 415.9 160.0 L 418.8 155.0 L 421.8 150.0 L 424.8 145.0 L 427.9 140.0 L 431.1 135.0 L 434.3 130.0 L 437.7 125.0 L 441.1 120.0 L 444.6 115.0 L 448.2 110.0 L 452.0 105.0 L 455.8 100.0 L 459.6 95.0 L 463.6 90.0 L 467.7 85.0 L 472.0 80.0 L 476.3 75.0 L 480.7 70.0 L 485.2 65.0 L 489.9 60.0 L 494.7 55.0 L 499.6 50.0 L 504.6 45.0 L 509.7 40.0 L 515.0 35.0 L 520.4 30.0 L 526.0 25.0 L 531.7 20.0 L 537.6 15.0 L 543.6 10.0 L 549.7 5.0 L 556.0 0.0 Z"></path></clipPath><pattern id="dmxFlow" width="560" height="56" patternUnits="userSpaceOnUse"><rect x="0" y="0" width="560" height="18" fill="rgba(255,240,210,.13)"></rect></pattern></defs><g clip-path="url(#dmxFunnel)"><rect class="hero-flow" x="0" y="-56" width="560" height="462" fill="url(#dmxFlow)"></rect></g></svg>
+<div class="paper" aria-hidden="true" style="position: absolute; inset: 0; z-index: 1; pointer-events: none"></div>
+<div style="position: relative; z-index: 2; max-width: 820px; margin: calc(-1 * clamp(16px, 7vw, 140px)) auto 0; background: #d9cdb4; border: 3px solid #1d1b1a; border-radius: 32px; padding: clamp(18px, 3vw, 30px) clamp(18px, 3vw, 30px) 64px; box-shadow: 0 16px 0 #1d1b1a">
+<div class="screen boot" style="position: relative; border-radius: 20px; overflow: hidden; border: 3px solid #1d1b1a; padding: clamp(24px, 4vw, 48px) 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center">
+<p style="margin: 0; font-size: 15px; color: #2fb14c; letter-spacing: 0.08em; display: flex; align-items: center"><span class="type">> INICIANDO SIMULACIÓN</span><span class="cursor">_</span></p>
+<img src="assets/logo.png" alt="DopaminemaXXing" style="width: 100%; max-width: 480px; height: auto; display: block" />
+<a href="https://tamara1001.itch.io/dopaminemaxxing" style="display: inline-flex; align-items: center; min-height: 64px; padding: 0 40px; background: #43c463; color: #0e3b1b; font-family: 'Archivo Black', sans-serif; font-size: 26px; text-decoration: none; border: 3px solid #efe6d4; box-shadow: 0 6px 0 #efe6d4" class="press press-light">JUGAR</a>
+<p style="margin: 0; font-size: 14px; color: #2fb14c"><span class="type2">Gratis · Navegador · itch.io</span></p>
+<div class="scan flicker" aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none"></div>
+</div>
+<span style="position: absolute; left: 34px; bottom: 22px; font-size: 13px; font-weight: 600">DMX-01</span>
+<div aria-hidden="true" style="position: absolute; right: 34px; bottom: 20px; display: flex; gap: 10px">
+<span style="width: 22px; height: 22px; border-radius: 50%; background: #e8641e; border: 2px solid #1d1b1a"></span>
+<span style="width: 22px; height: 22px; border-radius: 50%; background: #2e8f8a; border: 2px solid #1d1b1a"></span>
+</div>
+</div>
+</header>
+
+<section id="que-es" style="max-width: 1600px; margin: 0 auto; padding: 48px 24px 72px">
+<div style="display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-end; border-top: 3px solid #1d1b1a; padding-top: 40px">
+<div style="flex: 1 1 420px">
+
+<h2 style="margin: 0; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: clamp(40px, 6vw, 76px); line-height: 0.98; letter-spacing: -0.02em">Un salón de juegos que nunca cierra.</h2>
+</div>
+<div style="flex: 1 1 360px; display: flex; flex-direction: column; gap: 20px">
+<p style="margin: 0; font-size: 18px; line-height: 1.65">DopaminemaXXing es un incremental de mesa. Cuatro minijuegos de salón corren a la vez: mientras jugás uno, tu ejército sigue peleando y la plata sigue entrando.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<span style="padding: 6px 12px; border: 2px solid #1d1b1a; font-size: 13px; font-weight: 600">GRATIS</span>
+<span style="padding: 6px 12px; border: 2px solid #1d1b1a; font-size: 13px; font-weight: 600">NAVEGADOR</span>
+<span style="padding: 6px 12px; border: 2px solid #1d1b1a; font-size: 13px; font-weight: 600">UNITY</span>
+<span style="padding: 6px 12px; border: 2px solid #1d1b1a; font-size: 13px; font-weight: 600">EN DESARROLLO</span>
+</div>
+</div>
+</div>
+</section>
+
+<section id="como-se-juega" style="background: #1d1b1a; color: #efe6d4; overflow: hidden">
+<div class="stripes-h" aria-hidden="true" style="height: 32px"></div>
+<div style="max-width: 1600px; margin: 0 auto; padding: 88px 24px 104px">
+<p style="margin: 0 0 10px; font-size: 14px; font-weight: 600; letter-spacing: 0.12em; color: #f2b134">CÓMO SE JUEGA</p>
+<h2 style="margin: 0 0 64px; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: clamp(40px, 6vw, 76px); line-height: 0.98; letter-spacing: -0.02em">Jugá, cobrá, mejorá. Repetí.</h2>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: clamp(120px, 14vw, 200px)">
+
+<li ref=${v.ref0} class="reveal ${v.rv0}" style="position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 48px">
+
+<div style="position: relative; z-index: 1; flex: 1 1 420px; padding: clamp(28px, 5vw, 64px) clamp(16px, 3vw, 40px); display: flex; justify-content: center">
+<div aria-hidden="true" class="pulse" style="position: absolute; inset: -6% -2%; background: #c8231a; clip-path: polygon(50% 0%, 58% 22%, 78% 4%, 74% 28%, 100% 20%, 84% 42%, 100% 56%, 80% 62%, 94% 86%, 68% 76%, 62% 100%, 48% 80%, 30% 98%, 30% 74%, 4% 84%, 18% 60%, 0% 46%, 20% 38%, 6% 12%, 32% 22%)"></div>
+<div aria-hidden="true" style="position: absolute; right: -2%; top: -4%; width: 26%; aspect-ratio: 1 / 1.15; background: #f2b134; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)"></div>
+<div aria-hidden="true" style="position: absolute; left: 2%; bottom: 2%; width: 14%; aspect-ratio: 1 / 1.15; border: 0; background: #efe6d4; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)"></div>
+<div class="tilt" style="position: relative; width: 90%; border: 4px solid #efe6d4; border-radius: 8px; overflow: hidden; transform: rotate(-3deg); box-shadow: 0 12px 0 rgba(0,0,0,.45)"><img src="assets/mesa-ejercito.jpg" alt="Mesa del ejército con tablero hexagonal" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block" /><div class="scan" aria-hidden="true" style="position: absolute; inset: 0"></div></div>
+</div>
+<div style="position: relative; z-index: 1; flex: 1 1 340px; display: flex; flex-direction: column; gap: 18px">
+<span style="font-family: 'Archivo Black', sans-serif; font-size: 80px; line-height: 0.9; color: #8e1610">01</span>
+<h3 style="margin: 0; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 36px; line-height: 1.05">Elegí una mesa y jugá</h3>
+<p style="margin: 0; font-size: 17px; line-height: 1.65">Ruleta, tablero de dados, pesca o ejército. Cada mesa es un minijuego con sus propias reglas, y podés pasar de una a otra en cualquier momento.</p>
+</div>
+</li>
+
+<li ref=${v.ref1} class="reveal ${v.rv1}" style="position: relative; display: flex; flex-wrap: wrap-reverse; align-items: center; gap: 48px">
+
+<div style="position: relative; z-index: 1; flex: 1 1 340px; display: flex; flex-direction: column; gap: 18px">
+<span style="font-family: 'Archivo Black', sans-serif; font-size: 80px; line-height: 0.9; color: #e8641e">02</span>
+<h3 style="margin: 0; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 36px; line-height: 1.05">Juntá oro, doblones, billetes y fichas</h3>
+<p style="margin: 0; font-size: 17px; line-height: 1.65">Cada mesa paga en su propia moneda. Pescá y vendé el balde, ganá apuestas, completá vueltas al tablero.</p>
+</div>
+<div style="position: relative; z-index: 1; flex: 1 1 420px; padding: clamp(28px, 5vw, 64px) clamp(16px, 3vw, 40px); display: flex; justify-content: center">
+<div aria-hidden="true" style="position: absolute; inset: 4% 0% 0% 6%; background: #2e8f8a; border-radius: 62% 38% 46% 54% / 48% 60% 40% 52%; transform: rotate(-8deg)"></div>
+<div aria-hidden="true" class="ripple" style="position: absolute; left: -4%; bottom: -6%; width: 46%; aspect-ratio: 2 / 1; border: 8px solid #3fb5ac; border-radius: 50%"></div>
+<div aria-hidden="true" class="ripple ripple-2" style="position: absolute; left: 4%; bottom: 2%; width: 30%; aspect-ratio: 2 / 1; border: 6px solid #3fb5ac; border-radius: 50%"></div>
+<div aria-hidden="true" class="bob" style="position: absolute; right: 2%; top: -2%; width: 16%; aspect-ratio: 1"><div style="width: 100%; height: 100%; background: #efe6d4; border-radius: 50% 0 50% 50%; transform: rotate(-45deg)"></div></div>
+<div class="tilt" style="position: relative; width: 90%; border: 4px solid #efe6d4; border-radius: 8px; overflow: hidden; transform: rotate(3deg); box-shadow: 0 12px 0 rgba(0,0,0,.45)"><img src="assets/mesa-pesca.jpg" alt="Estanque de pesca del juego" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block" /><div class="scan" aria-hidden="true" style="position: absolute; inset: 0"></div></div>
+</div>
+</li>
+
+<li ref=${v.ref2} class="reveal ${v.rv2}" style="position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 48px">
+
+<div style="position: relative; z-index: 1; flex: 1 1 420px; padding: clamp(28px, 5vw, 64px) clamp(16px, 3vw, 40px); display: flex; justify-content: center">
+<div aria-live="polite" style="position: absolute; right: 0; bottom: 0; z-index: 4; pointer-events: none">${v.showDice ? html`<div class="pop ${v.diceOut}" style="width: 128px; height: 128px; background: #efe6d4; color: #1d1b1a; border: 4px solid #1d1b1a; border-radius: 26px; box-shadow: 0 10px 0 #1d1b1a; display: flex; align-items: center; justify-content: center; font-family: 'Archivo Black', sans-serif; font-size: 68px; line-height: 1">${v.diceNum}</div>` : null}</div>
+<button type="button" class="hit hit-dice" aria-label="Tirar los dados" onClick=${v.roll} style="position: absolute; left: -19%; top: 27%; width: 35%; height: 55%"></button>
+<button type="button" class="hit hit-dice" aria-label="Tirar los dados" onClick=${v.roll} style="position: absolute; left: 86%; top: -14%; width: 25%; height: 38%"></button>
+<svg aria-hidden="true" viewBox="0 0 600 440" preserveAspectRatio="xMidYMid meet" style="position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none"><g transform="rotate(4 300 220)"><rect x="40" y="20" width="540" height="400" rx="6" fill="#2e8f8a"></rect><ellipse cx="130" cy="120" rx="60" ry="88" fill="none" stroke="#efe6d4" stroke-opacity=".55" stroke-width="3"></ellipse><ellipse cx="130" cy="320" rx="60" ry="88" fill="none" stroke="#efe6d4" stroke-opacity=".55" stroke-width="3"></ellipse><ellipse cx="300" cy="120" rx="60" ry="88" fill="none" stroke="#efe6d4" stroke-opacity=".55" stroke-width="3"></ellipse><ellipse cx="300" cy="320" rx="60" ry="88" fill="none" stroke="#efe6d4" stroke-opacity=".55" stroke-width="3"></ellipse><ellipse cx="470" cy="120" rx="60" ry="88" fill="none" stroke="#efe6d4" stroke-opacity=".55" stroke-width="3"></ellipse><ellipse cx="470" cy="320" rx="60" ry="88" fill="none" stroke="#efe6d4" stroke-opacity=".55" stroke-width="3"></ellipse><line x1="40" y1="220" x2="580" y2="220" stroke="#efe6d4" stroke-opacity=".55" stroke-width="3"></line><line x1="215" y1="20" x2="215" y2="420" stroke="#efe6d4" stroke-opacity=".55" stroke-width="3"></line><line x1="385" y1="20" x2="385" y2="420" stroke="#efe6d4" stroke-opacity=".55" stroke-width="3"></line></g><g class="die ${v.rollCls}"><g transform="rotate(-12 -10 230)"><polygon points="-10.0,120.0 93.9,180.0 -10.0,240.0 -113.9,180.0" fill="#efe6d4"></polygon><polygon points="-0.6,155.4 -4.4,156.9 -8.8,157.6 -13.4,157.4 -17.6,156.3 -20.8,154.4 -22.8,152.0 -23.2,149.3 -22.0,146.8 -19.4,144.6 -15.6,143.1 -11.2,142.4 -6.6,142.6 -2.4,143.7 0.8,145.6 2.8,148.0 3.2,150.7 2.0,153.2" fill="#1d1b1a"></polygon><polygon points="51.3,185.4 47.5,186.9 43.1,187.6 38.5,187.4 34.4,186.3 31.1,184.4 29.2,182.0 28.8,179.3 30.0,176.8 32.6,174.6 36.4,173.1 40.8,172.4 45.4,172.6 49.5,173.7 52.8,175.6 54.7,178.0 55.1,180.7 53.9,183.2" fill="#1d1b1a"></polygon><polygon points="-0.6,185.4 -4.4,186.9 -8.8,187.6 -13.4,187.4 -17.6,186.3 -20.8,184.4 -22.8,182.0 -23.2,179.3 -22.0,176.8 -19.4,174.6 -15.6,173.1 -11.2,172.4 -6.6,172.6 -2.4,173.7 0.8,175.6 2.8,178.0 3.2,180.7 2.0,183.2" fill="#1d1b1a"></polygon><polygon points="-52.6,185.4 -56.4,186.9 -60.8,187.6 -65.4,187.4 -69.5,186.3 -72.8,184.4 -74.7,182.0 -75.1,179.3 -73.9,176.8 -71.3,174.6 -67.5,173.1 -63.1,172.4 -58.5,172.6 -54.4,173.7 -51.1,175.6 -49.2,178.0 -48.8,180.7 -50.0,183.2" fill="#1d1b1a"></polygon><polygon points="-0.6,215.4 -4.4,216.9 -8.8,217.6 -13.4,217.4 -17.6,216.3 -20.8,214.4 -22.8,212.0 -23.2,209.3 -22.0,206.8 -19.4,204.6 -15.6,203.1 -11.2,202.4 -6.6,202.6 -2.4,203.7 0.8,205.6 2.8,208.0 3.2,210.7 2.0,213.2" fill="#1d1b1a"></polygon><polygon points="-113.9,180.0 -10.0,240.0 -10.0,360.0 -113.9,300.0" fill="#d9cdb4"></polygon><polygon points="-78.6,230.4 -79.2,233.8 -80.8,236.1 -83.3,237.1 -86.3,236.6 -89.6,234.7 -92.6,231.7 -95.1,227.8 -96.7,223.6 -97.3,219.6 -96.7,216.2 -95.1,213.9 -92.6,212.9 -89.6,213.4 -86.3,215.3 -83.3,218.3 -80.8,222.2 -79.2,226.4" fill="#1d1b1a"></polygon><polygon points="-52.6,275.4 -53.2,278.8 -54.8,281.1 -57.3,282.1 -60.3,281.6 -63.6,279.7 -66.6,276.7 -69.1,272.8 -70.7,268.6 -71.3,264.6 -70.7,261.2 -69.1,258.9 -66.6,257.9 -63.6,258.4 -60.3,260.3 -57.3,263.3 -54.8,267.2 -53.2,271.4" fill="#1d1b1a"></polygon><polygon points="-26.6,320.4 -27.2,323.8 -28.8,326.1 -31.3,327.1 -34.4,326.6 -37.6,324.7 -40.7,321.7 -43.1,317.8 -44.8,313.6 -45.3,309.6 -44.8,306.2 -43.1,303.9 -40.7,302.9 -37.6,303.4 -34.4,305.3 -31.3,308.3 -28.8,312.2 -27.2,316.4" fill="#1d1b1a"></polygon><polygon points="93.9,180.0 -10.0,240.0 -10.0,360.0 93.9,300.0" fill="#d9cdb4"></polygon><polygon points="58.6,230.4 59.2,233.8 60.8,236.1 63.3,237.1 66.3,236.6 69.6,234.7 72.6,231.7 75.1,227.8 76.7,223.6 77.3,219.6 76.7,216.2 75.1,213.9 72.6,212.9 69.6,213.4 66.3,215.3 63.3,218.3 60.8,222.2 59.2,226.4" fill="#1d1b1a"></polygon><polygon points="6.6,320.4 7.2,323.8 8.8,326.1 11.3,327.1 14.4,326.6 17.6,324.7 20.7,321.7 23.1,317.8 24.8,313.6 25.3,309.6 24.8,306.2 23.1,303.9 20.7,302.9 17.6,303.4 14.4,305.3 11.3,308.3 8.8,312.2 7.2,316.4" fill="#1d1b1a"></polygon></g></g><g class="die die-2 ${v.rollCls}"><g transform="rotate(14 590 20)"><polygon points="590.0,-60.0 662.7,-18.0 590.0,24.0 517.3,-18.0" fill="#efe6d4"></polygon><polygon points="596.5,-35.2 593.9,-34.2 590.8,-33.7 587.6,-33.8 584.7,-34.6 582.4,-35.9 581.1,-37.6 580.8,-39.5 581.6,-41.3 583.5,-42.8 586.1,-43.8 589.2,-44.3 592.4,-44.2 595.3,-43.4 597.6,-42.1 598.9,-40.4 599.2,-38.5 598.4,-36.7" fill="#3fb5ac"></polygon><polygon points="632.9,-14.2 630.3,-13.2 627.2,-12.7 624.0,-12.8 621.1,-13.6 618.8,-14.9 617.4,-16.6 617.1,-18.5 618.0,-20.3 619.8,-21.8 622.5,-22.8 625.6,-23.3 628.8,-23.2 631.7,-22.4 634.0,-21.1 635.3,-19.4 635.6,-17.5 634.8,-15.7" fill="#3fb5ac"></polygon><polygon points="560.2,-14.2 557.5,-13.2 554.4,-12.7 551.2,-12.8 548.3,-13.6 546.0,-14.9 544.7,-16.6 544.4,-18.5 545.2,-20.3 547.1,-21.8 549.7,-22.8 552.8,-23.3 556.0,-23.2 558.9,-22.4 561.2,-21.1 562.6,-19.4 562.9,-17.5 562.0,-15.7" fill="#3fb5ac"></polygon><polygon points="596.5,6.8 593.9,7.8 590.8,8.3 587.6,8.2 584.7,7.4 582.4,6.1 581.1,4.4 580.8,2.5 581.6,0.7 583.5,-0.8 586.1,-1.8 589.2,-2.3 592.4,-2.2 595.3,-1.4 597.6,-0.1 598.9,1.6 599.2,3.5 598.4,5.3" fill="#3fb5ac"></polygon><polygon points="517.3,-18.0 590.0,24.0 590.0,108.0 517.3,66.0" fill="#efe6d4"></polygon><polygon points="542.0,14.8 541.6,17.1 540.5,18.7 538.7,19.4 536.6,19.1 534.3,17.8 532.2,15.6 530.4,12.9 529.3,10.0 528.9,7.2 529.3,4.8 530.4,3.2 532.2,2.5 534.3,2.9 536.6,4.2 538.7,6.3 540.5,9.0 541.6,11.9" fill="#3fb5ac"></polygon><polygon points="578.4,35.8 578.0,38.1 576.8,39.7 575.1,40.4 573.0,40.1 570.7,38.8 568.5,36.6 566.8,33.9 565.7,31.0 565.3,28.2 565.7,25.8 566.8,24.2 568.5,23.5 570.7,23.9 573.0,25.2 575.1,27.3 576.8,30.0 578.0,32.9" fill="#3fb5ac"></polygon><polygon points="542.0,38.3 541.6,40.6 540.5,42.3 538.7,42.9 536.6,42.6 534.3,41.3 532.2,39.2 530.4,36.5 529.3,33.5 528.9,30.7 529.3,28.4 530.4,26.7 532.2,26.1 534.3,26.4 536.6,27.7 538.7,29.8 540.5,32.5 541.6,35.5" fill="#3fb5ac"></polygon><polygon points="578.4,59.3 578.0,61.6 576.8,63.3 575.1,63.9 573.0,63.6 570.7,62.3 568.5,60.2 566.8,57.5 565.7,54.5 565.3,51.7 565.7,49.4 566.8,47.7 568.5,47.1 570.7,47.4 573.0,48.7 575.1,50.8 576.8,53.5 578.0,56.5" fill="#3fb5ac"></polygon><polygon points="542.0,61.8 541.6,64.2 540.5,65.8 538.7,66.5 536.6,66.1 534.3,64.8 532.2,62.7 530.4,60.0 529.3,57.1 528.9,54.2 529.3,51.9 530.4,50.3 532.2,49.6 534.3,49.9 536.6,51.2 538.7,53.4 540.5,56.1 541.6,59.0" fill="#3fb5ac"></polygon><polygon points="578.4,82.8 578.0,85.2 576.8,86.8 575.1,87.5 573.0,87.1 570.7,85.8 568.5,83.7 566.8,81.0 565.7,78.1 565.3,75.2 565.7,72.9 566.8,71.3 568.5,70.6 570.7,70.9 573.0,72.2 575.1,74.4 576.8,77.1 578.0,80.0" fill="#3fb5ac"></polygon><polygon points="662.7,-18.0 590.0,24.0 590.0,108.0 662.7,66.0" fill="#efe6d4"></polygon><polygon points="619.8,48.8 620.2,51.1 621.4,52.8 623.1,53.4 625.2,53.1 627.5,51.8 629.6,49.7 631.4,47.0 632.5,44.0 632.9,41.2 632.5,38.9 631.4,37.2 629.6,36.6 627.5,36.9 625.2,38.2 623.1,40.3 621.4,43.0 620.2,46.0" fill="#3fb5ac"></polygon></g></g></svg>
+<div class="tilt" style="position: relative; width: 90%; border: 4px solid #efe6d4; border-radius: 8px; overflow: hidden; transform: rotate(-2deg); box-shadow: 0 12px 0 rgba(0,0,0,.45)"><img src="assets/mesa-dados.jpg" alt="Tablero con dados del juego" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block" /><div class="scan" aria-hidden="true" style="position: absolute; inset: 0"></div></div>
+</div>
+<div style="position: relative; z-index: 1; flex: 1 1 340px; display: flex; flex-direction: column; gap: 18px">
+<span style="font-family: 'Archivo Black', sans-serif; font-size: 80px; line-height: 0.9; color: #f2b134">03</span>
+<h3 style="margin: 0; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 36px; line-height: 1.05">Dejá que el ejército trabaje</h3>
+<p style="margin: 0; font-size: 17px; line-height: 1.65">Tu ejército compra, fusiona y pelea oleadas solo. Aunque estés en otra mesa, sigue produciendo.</p>
+</div>
+</li>
+
+<li ref=${v.ref3} class="reveal ${v.rv3}" style="position: relative; display: flex; flex-wrap: wrap-reverse; align-items: center; gap: 48px; margin-top: clamp(60px, 8vw, 140px)">
+
+<div style="position: relative; z-index: 1; flex: 1 1 340px; display: flex; flex-direction: column; gap: 18px">
+<span style="font-family: 'Archivo Black', sans-serif; font-size: 80px; line-height: 0.9; color: #c8231a">04</span>
+<h3 style="margin: 0; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: 36px; line-height: 1.05">Mejoras, objetivos y árbol de desbloqueos</h3>
+<p style="margin: 0; font-size: 17px; line-height: 1.65">Invertí lo que ganaste en mejoras, cumplí objetivos y avanzá por el árbol para abrir mesas y monedas nuevas.</p>
+</div>
+<div style="position: relative; z-index: 1; flex: 1 1 420px; padding: clamp(28px, 5vw, 64px) clamp(16px, 3vw, 40px); display: flex; justify-content: center">
+<div aria-live="polite" style="position: absolute; left: 0; top: 0; z-index: 4; pointer-events: none">${v.showSpin ? html`<div class="pop ${v.spinOut}" style="width: 140px; height: 140px; border-radius: 50%; background: ${v.spinBg}; color: #efe6d4; border: 6px solid #efe6d4; box-shadow: 0 0 0 5px #1d1b1a, 0 12px 0 5px #1d1b1a; display: flex; align-items: center; justify-content: center; font-family: 'Archivo Black', sans-serif; font-size: 64px; line-height: 1">${v.spinNum}</div>` : null}</div>
+<button type="button" class="hit hit-wheel" aria-label="Girar la ruleta" onClick=${v.spin} style="position: absolute; left: 70%; top: -40%; width: 44%; height: 56%"></button>
+<svg aria-hidden="true" viewBox="0 0 600 440" preserveAspectRatio="xMidYMid meet" style="position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none"><g transform="rotate(-7 300 220)"><rect x="-90" y="100" width="70" height="234" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="-55" y="229.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="34" fill="#3fb5ac">0</text><rect x="-20" y="100" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="25.0" y="151.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#ff6b5e">3</text><rect x="-20" y="178" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="25.0" y="229.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#efe6d4">2</text><rect x="-20" y="256" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="25.0" y="307.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#ff6b5e">1</text><rect x="70" y="100" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="115.0" y="151.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#efe6d4">6</text><rect x="70" y="178" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="115.0" y="229.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#ff6b5e">5</text><rect x="70" y="256" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="115.0" y="307.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#efe6d4">4</text><rect x="160" y="100" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="205.0" y="151.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#ff6b5e">9</text><rect x="160" y="178" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="205.0" y="229.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#efe6d4">8</text><rect x="160" y="256" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="205.0" y="307.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#ff6b5e">7</text><rect x="250" y="100" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="295.0" y="151.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#ff6b5e">12</text><rect x="250" y="178" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="295.0" y="229.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#efe6d4">11</text><rect x="250" y="256" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="295.0" y="307.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#efe6d4">10</text><rect x="340" y="100" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="385.0" y="151.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#efe6d4">15</text><rect x="340" y="178" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="385.0" y="229.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#ff6b5e">14</text><rect x="340" y="256" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="385.0" y="307.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#efe6d4">13</text><rect x="430" y="100" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="475.0" y="151.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#ff6b5e">18</text><rect x="430" y="178" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="475.0" y="229.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#efe6d4">17</text><rect x="430" y="256" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="475.0" y="307.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#ff6b5e">16</text><rect x="520" y="100" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="565.0" y="151.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#ff6b5e">21</text><rect x="520" y="178" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="565.0" y="229.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#efe6d4">20</text><rect x="520" y="256" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="565.0" y="307.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#ff6b5e">19</text><rect x="610" y="100" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="655.0" y="151.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#efe6d4">24</text><rect x="610" y="178" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="655.0" y="229.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#ff6b5e">23</text><rect x="610" y="256" width="90" height="78" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="655.0" y="307.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="32" fill="#efe6d4">22</text><rect x="-20" y="30" width="360" height="70" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="160" y="74" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="26" fill="#efe6d4">1 – 12</text><rect x="340" y="30" width="360" height="70" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="520" y="74" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="26" fill="#efe6d4">13 – 24</text><rect x="-20" y="334" width="180" height="70" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="70" y="378" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="24" fill="#efe6d4">PAR</text><rect x="160" y="334" width="180" height="70" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="250" y="378" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="24" fill="#ff6b5e">ROJO</text><rect x="340" y="334" width="180" height="70" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="430" y="378" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="24" fill="#efe6d4">NEGRO</text><rect x="520" y="334" width="180" height="70" fill="none" stroke="#efe6d4" stroke-width="4"></rect><text x="610" y="378" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="24" fill="#efe6d4">IMPAR</text></g><g class="wheel" style="transform-origin: 640px -40px"><g class="wheel-hover" style="transform-origin: 640px -40px"><g class="wheel-burst ${v.spinCls}" style="transform-origin: 640px -40px"><circle cx="640" cy="-40" r="244" fill="#e8641e"></circle><polygon points="870.0,-40.0 866.7,-1.1 817.4,-9.6 820.0,-40.0" fill="#2e8f8a"></polygon><polygon points="866.7,-1.1 856.9,36.6 809.7,20.0 817.4,-9.6" fill="#1d1b1a"></polygon><polygon points="856.9,36.6 840.8,72.2 797.1,47.8 809.7,20.0" fill="#efe6d4"></polygon><polygon points="840.8,72.2 818.9,104.5 780.0,73.1 797.1,47.8" fill="#c8231a"></polygon><polygon points="818.9,104.5 792.0,132.7 758.9,95.1 780.0,73.1" fill="#1d1b1a"></polygon><polygon points="792.0,132.7 760.6,155.9 734.4,113.3 758.9,95.1" fill="#efe6d4"></polygon><polygon points="760.6,155.9 725.8,173.4 707.1,127.0 734.4,113.3" fill="#c8231a"></polygon><polygon points="725.8,173.4 688.5,184.8 677.9,136.0 707.1,127.0" fill="#1d1b1a"></polygon><polygon points="688.5,184.8 649.8,189.8 647.6,139.8 677.9,136.0" fill="#efe6d4"></polygon><polygon points="649.8,189.8 610.8,188.1 617.1,138.5 647.6,139.8" fill="#c8231a"></polygon><polygon points="610.8,188.1 572.7,179.9 587.3,132.1 617.1,138.5" fill="#1d1b1a"></polygon><polygon points="572.7,179.9 536.5,165.4 559.0,120.7 587.3,132.1" fill="#efe6d4"></polygon><polygon points="536.5,165.4 503.2,144.9 533.0,104.7 559.0,120.7" fill="#c8231a"></polygon><polygon points="503.2,144.9 474.0,119.1 510.0,84.5 533.0,104.7" fill="#1d1b1a"></polygon><polygon points="474.0,119.1 449.4,88.8 490.9,60.8 510.0,84.5" fill="#efe6d4"></polygon><polygon points="449.4,88.8 430.4,54.7 476.0,34.1 490.9,60.8" fill="#c8231a"></polygon><polygon points="430.4,54.7 417.4,18.0 465.8,5.4 476.0,34.1" fill="#1d1b1a"></polygon><polygon points="417.4,18.0 410.8,-20.5 460.6,-24.7 465.8,5.4" fill="#efe6d4"></polygon><polygon points="410.8,-20.5 410.8,-59.5 460.6,-55.3 460.6,-24.7" fill="#c8231a"></polygon><polygon points="410.8,-59.5 417.4,-98.0 465.8,-85.4 460.6,-55.3" fill="#1d1b1a"></polygon><polygon points="417.4,-98.0 430.4,-134.7 476.0,-114.1 465.8,-85.4" fill="#efe6d4"></polygon><polygon points="430.4,-134.7 449.4,-168.8 490.9,-140.8 476.0,-114.1" fill="#c8231a"></polygon><polygon points="449.4,-168.8 474.0,-199.1 510.0,-164.5 490.9,-140.8" fill="#1d1b1a"></polygon><polygon points="474.0,-199.1 503.2,-224.9 533.0,-184.7 510.0,-164.5" fill="#efe6d4"></polygon><polygon points="503.2,-224.9 536.5,-245.4 559.0,-200.7 533.0,-184.7" fill="#c8231a"></polygon><polygon points="536.5,-245.4 572.7,-259.9 587.3,-212.1 559.0,-200.7" fill="#1d1b1a"></polygon><polygon points="572.7,-259.9 610.8,-268.1 617.1,-218.5 587.3,-212.1" fill="#efe6d4"></polygon><polygon points="610.8,-268.1 649.8,-269.8 647.6,-219.8 617.1,-218.5" fill="#c8231a"></polygon><polygon points="649.8,-269.8 688.5,-264.8 677.9,-216.0 647.6,-219.8" fill="#1d1b1a"></polygon><polygon points="688.5,-264.8 725.8,-253.4 707.1,-207.0 677.9,-216.0" fill="#efe6d4"></polygon><polygon points="725.8,-253.4 760.6,-235.9 734.4,-193.3 707.1,-207.0" fill="#c8231a"></polygon><polygon points="760.6,-235.9 792.0,-212.7 758.9,-175.1 734.4,-193.3" fill="#1d1b1a"></polygon><polygon points="792.0,-212.7 818.9,-184.5 780.0,-153.1 758.9,-175.1" fill="#efe6d4"></polygon><polygon points="818.9,-184.5 840.8,-152.2 797.1,-127.8 780.0,-153.1" fill="#c8231a"></polygon><polygon points="840.8,-152.2 856.9,-116.6 809.7,-100.0 797.1,-127.8" fill="#1d1b1a"></polygon><polygon points="856.9,-116.6 866.7,-78.9 817.4,-70.4 809.7,-100.0" fill="#efe6d4"></polygon><polygon points="866.7,-78.9 870.0,-40.0 820.0,-40.0 817.4,-70.4" fill="#c8231a"></polygon><circle cx="640" cy="-40" r="180" fill="#1d1b1a"></circle><circle cx="640" cy="-40" r="140" fill="none" stroke="#f2b134" stroke-width="6"></circle><circle cx="498.0" cy="42.0" r="13" fill="#efe6d4"></circle></g></g></g><g class="bob"><line x1="30" y1="410" x2="107.0" y2="487.0" stroke="rgba(0,0,0,.4)" stroke-width="144" stroke-linecap="round"></line><circle cx="30" cy="410" r="72" fill="#5b86c9"></circle><rect x="18.5" y="338.0" width="23.0" height="17.3" fill="#efe6d4" transform="rotate(15 30 410)"></rect><rect x="18.5" y="338.0" width="23.0" height="17.3" fill="#efe6d4" transform="rotate(75 30 410)"></rect><rect x="18.5" y="338.0" width="23.0" height="17.3" fill="#efe6d4" transform="rotate(135 30 410)"></rect><rect x="18.5" y="338.0" width="23.0" height="17.3" fill="#efe6d4" transform="rotate(195 30 410)"></rect><rect x="18.5" y="338.0" width="23.0" height="17.3" fill="#efe6d4" transform="rotate(255 30 410)"></rect><rect x="18.5" y="338.0" width="23.0" height="17.3" fill="#efe6d4" transform="rotate(315 30 410)"></rect><circle cx="30" cy="410" r="47.5" fill="none" stroke="#1d1b1a" stroke-width="4.3" stroke-dasharray="13.0 7.2"></circle><circle cx="30" cy="410" r="37.4" fill="#1d1b1a"></circle><text x="30" y="419.4" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="27.4" fill="#efe6d4">7</text><line x1="520" y1="400" x2="583.0" y2="463.0" stroke="rgba(0,0,0,.4)" stroke-width="92" stroke-linecap="round"></line><circle cx="520" cy="400" r="46" fill="#e8641e"></circle><rect x="512.6" y="354.0" width="14.7" height="11.0" fill="#efe6d4" transform="rotate(15 520 400)"></rect><rect x="512.6" y="354.0" width="14.7" height="11.0" fill="#efe6d4" transform="rotate(75 520 400)"></rect><rect x="512.6" y="354.0" width="14.7" height="11.0" fill="#efe6d4" transform="rotate(135 520 400)"></rect><rect x="512.6" y="354.0" width="14.7" height="11.0" fill="#efe6d4" transform="rotate(195 520 400)"></rect><rect x="512.6" y="354.0" width="14.7" height="11.0" fill="#efe6d4" transform="rotate(255 520 400)"></rect><rect x="512.6" y="354.0" width="14.7" height="11.0" fill="#efe6d4" transform="rotate(315 520 400)"></rect><circle cx="520" cy="400" r="30.4" fill="none" stroke="#efe6d4" stroke-width="2.8" stroke-dasharray="8.3 4.6"></circle><circle cx="520" cy="400" r="23.9" fill="#efe6d4"></circle><text x="520" y="406.0" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="17.5" fill="#1d1b1a">500</text><line x1="440" y1="440" x2="503.0" y2="503.0" stroke="rgba(0,0,0,.4)" stroke-width="76" stroke-linecap="round"></line><circle cx="440" cy="440" r="38" fill="#efe6d4"></circle><rect x="433.9" y="402.0" width="12.2" height="9.1" fill="#2e8f8a" transform="rotate(15 440 440)"></rect><rect x="433.9" y="402.0" width="12.2" height="9.1" fill="#2e8f8a" transform="rotate(75 440 440)"></rect><rect x="433.9" y="402.0" width="12.2" height="9.1" fill="#2e8f8a" transform="rotate(135 440 440)"></rect><rect x="433.9" y="402.0" width="12.2" height="9.1" fill="#2e8f8a" transform="rotate(195 440 440)"></rect><rect x="433.9" y="402.0" width="12.2" height="9.1" fill="#2e8f8a" transform="rotate(255 440 440)"></rect><rect x="433.9" y="402.0" width="12.2" height="9.1" fill="#2e8f8a" transform="rotate(315 440 440)"></rect><circle cx="440" cy="440" r="25.1" fill="none" stroke="#2e8f8a" stroke-width="2.3" stroke-dasharray="6.8 3.8"></circle><circle cx="440" cy="440" r="19.8" fill="#2e8f8a"></circle><text x="440" y="444.9" text-anchor="middle" font-family="Archivo Black, sans-serif" font-size="14.4" fill="#efe6d4">50</text></g></svg>
+<div class="tilt" style="position: relative; width: 90%; border: 4px solid #efe6d4; border-radius: 8px; overflow: hidden; transform: rotate(4deg); box-shadow: 0 12px 0 rgba(0,0,0,.45)"><img src="assets/mesa-ruleta.jpg" alt="Mesa de ruleta del juego" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block" /><div class="scan" aria-hidden="true" style="position: absolute; inset: 0"></div></div>
+</div>
+</li>
+
+</ol>
+</div>
+</section>
+
+<section id="arboles" style="max-width: 1600px; margin: 0 auto; padding: 104px 24px 40px">
+<p style="margin: 0 0 10px; font-size: 14px; font-weight: 600; letter-spacing: 0.12em; color: #c4470f">ÁRBOLES DE MEJORA</p>
+<h2 style="margin: 0 0 20px; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: clamp(40px, 6vw, 76px); line-height: 0.98; letter-spacing: -0.02em">Mejorá la mesa. Después, todo lo demás.</h2>
+<p style="margin: 0 0 56px; max-width: 640px; font-size: 18px; line-height: 1.65">Hay dos capas de progreso: lo que construís en cada mesa y lo que se queda para siempre.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 48px; align-items: flex-start">
+<div ref=${v.ref4} class="reveal tree ${v.rv4}" style="position: relative; flex: 3 1 560px; min-width: 0; margin-left: calc(-1 * max(24px, (100vw - 1600px) / 2 + 24px))">
+<svg aria-hidden="true" viewBox="0 0 900 640" style="display: block; width: 100%; height: auto; overflow: visible"><circle cx="300" cy="320" r="150" fill="none" stroke="#1d1b1a" stroke-opacity=".22" stroke-width="1.5" stroke-dasharray="2 9"></circle><circle cx="300" cy="320" r="290" fill="none" stroke="#1d1b1a" stroke-opacity=".22" stroke-width="1.5" stroke-dasharray="2 9"></circle><circle cx="300" cy="320" r="430" fill="none" stroke="#1d1b1a" stroke-opacity=".22" stroke-width="1.5" stroke-dasharray="2 9"></circle><path class="tree-line" d="M 300.0 320.0 C 180.0 300.0 90.0 332.0 -60.0 330.0" fill="none" stroke="#1d1b1a" stroke-width="2.5" stroke-linecap="round" style="transition-delay: 0.30s; transition-duration: 1s"></path><path class="tree-line" d="M 300.0 320.0 C 360.0 220.0 420.0 140.0 520.0 130.0" fill="none" stroke="#1d1b1a" stroke-width="2.5" stroke-linecap="round" style="transition-delay: 0.40s; transition-duration: 1s"></path><path class="tree-line" d="M 300.0 320.0 C 450.0 300.0 560.0 200.0 760.0 190.0" fill="none" stroke="#1d1b1a" stroke-width="2.5" stroke-linecap="round" style="transition-delay: 0.50s; transition-duration: 1s"></path><path class="tree-line" d="M 300.0 320.0 C 480.0 340.0 620.0 420.0 800.0 400.0" fill="none" stroke="#1d1b1a" stroke-width="2.5" stroke-linecap="round" style="transition-delay: 0.60s; transition-duration: 1s"></path><path class="tree-line" d="M 300.0 320.0 C 380.0 440.0 480.0 560.0 600.0 560.0" fill="none" stroke="#1d1b1a" stroke-width="2.5" stroke-linecap="round" style="transition-delay: 0.70s; transition-duration: 1s"></path><path class="tree-line" d="M 300.0 320.0 C 260.0 420.0 200.0 500.0 150.0 540.0" fill="none" stroke="#1d1b1a" stroke-width="2.5" stroke-linecap="round" style="transition-delay: 0.80s; transition-duration: 1s"></path><path class="tree-line" d="M 405.7 181.5 C 409.9 139.9 422.5 98.3 433.7 77.5" fill="none" stroke="#1d1b1a" stroke-width="1.5" stroke-linecap="round" style="transition-delay: 1.00s; transition-duration: .6s"></path><path class="tree-line" d="M 563.9 231.1 C 571.4 179.1 593.9 127.1 613.9 101.1" fill="none" stroke="#1d1b1a" stroke-width="1.5" stroke-linecap="round" style="transition-delay: 1.08s; transition-duration: .6s"></path><path class="tree-line" d="M 598.1 386.2 C 602.9 424.6 617.3 463.0 630.1 482.2" fill="none" stroke="#1d1b1a" stroke-width="1.5" stroke-linecap="round" style="transition-delay: 1.16s; transition-duration: .6s"></path><path class="tree-line" d="M 450.2 498.0 C 449.6 541.2 447.8 584.4 446.2 606.0" fill="none" stroke="#1d1b1a" stroke-width="1.5" stroke-linecap="round" style="transition-delay: 1.24s; transition-duration: .6s"></path><path class="tree-line" d="M 131.2 318.2 C 127.0 275.1 114.5 231.8 103.2 210.2" fill="none" stroke="#1d1b1a" stroke-width="1.5" stroke-linecap="round" style="transition-delay: 1.32s; transition-duration: .6s"></path><path class="tree-line" d="M 228.8 452.5 C 212.2 443.7 162.8 434.9 118.8 430.5" fill="none" stroke="#1d1b1a" stroke-width="1.5" stroke-linecap="round" style="transition-delay: 1.40s; transition-duration: .6s"></path><circle class="tree-join" cx="405.7" cy="181.5" r="4" fill="#1d1b1a"></circle><circle class="tree-join" cx="563.9" cy="231.1" r="4" fill="#1d1b1a"></circle><circle class="tree-join" cx="598.1" cy="386.2" r="4" fill="#1d1b1a"></circle><circle class="tree-join" cx="450.2" cy="498.0" r="4" fill="#1d1b1a"></circle><circle class="tree-join" cx="131.2" cy="318.2" r="4" fill="#1d1b1a"></circle><circle class="tree-join" cx="228.8" cy="452.5" r="4" fill="#1d1b1a"></circle><circle class="tree-dot" cx="433.7" cy="77.5" r="7" fill="#efe6d4" stroke="#1d1b1a" stroke-width="2"></circle><circle class="tree-dot" cx="613.9" cy="101.1" r="7" fill="#efe6d4" stroke="#1d1b1a" stroke-width="2"></circle><circle class="tree-dot" cx="630.1" cy="482.2" r="7" fill="#efe6d4" stroke="#1d1b1a" stroke-width="2"></circle><circle class="tree-dot" cx="446.2" cy="606.0" r="7" fill="#efe6d4" stroke="#1d1b1a" stroke-width="2"></circle><circle class="tree-dot" cx="103.2" cy="210.2" r="7" fill="#efe6d4" stroke="#1d1b1a" stroke-width="2"></circle><circle class="tree-dot" cx="118.8" cy="430.5" r="7" fill="#efe6d4" stroke="#1d1b1a" stroke-width="2"></circle><circle class="tree-pulse" r="4.5" fill="#c8231a"><animateMotion dur="2.2s" begin="2.4s" repeatCount="indefinite" path="M 300.0 320.0 C 360.0 220.0 420.0 140.0 520.0 130.0"></animateMotion></circle><circle class="tree-pulse" r="4.5" fill="#c8231a"><animateMotion dur="2.5s" begin="2.9s" repeatCount="indefinite" path="M 300.0 320.0 C 450.0 300.0 560.0 200.0 760.0 190.0"></animateMotion></circle><circle class="tree-pulse" r="4.5" fill="#c8231a"><animateMotion dur="2.8s" begin="3.4s" repeatCount="indefinite" path="M 300.0 320.0 C 480.0 340.0 620.0 420.0 800.0 400.0"></animateMotion></circle><circle class="tree-pulse" r="4.5" fill="#c8231a"><animateMotion dur="3.1s" begin="3.9s" repeatCount="indefinite" path="M 300.0 320.0 C 380.0 440.0 480.0 560.0 600.0 560.0"></animateMotion></circle><circle class="tree-pulse" r="4.5" fill="#c8231a"><animateMotion dur="3.4s" begin="4.4s" repeatCount="indefinite" path="M 300.0 320.0 C 260.0 420.0 200.0 500.0 150.0 540.0"></animateMotion></circle></svg>
+${(v.treeNodes||[]).map((n, $index) => html`<button type="button" onClick=${n.pick} aria-pressed=${n.pressed} aria-label=${n.label} class="tree-node ${n.cls}" style="--d: ${n.d}; position: absolute; left: ${n.x}; top: ${n.y}; width: clamp(60px, 5.5vw, 92px); height: clamp(60px, 5.5vw, 92px); padding: 0; box-sizing: border-box; border: 2.5px solid #1d1b1a; background: #efe6d4; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center"><img src=${n.icon} alt="" style="width: 72%; height: 72%; object-fit: contain; display: block" /></button>`)}
+</div>
+<div ref=${v.ref5} aria-live="polite" class="reveal ${v.rv5}" style="flex: 2 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 16px; margin-top: clamp(0px, 4vw, 64px)">
+<div class="tree-info ${v.selAnim}" style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: center; gap: 16px; border-top: 3px solid #1d1b1a; padding-top: 20px">
+<img src=${v.sel.icon} alt="" style="width: 64px; height: 64px; display: block; flex: none" />
+<div>
+<p style="margin: 0 0 4px; font-size: 13px; font-weight: 600; letter-spacing: 0.12em; color: ${v.sel.color}">${v.sel.kicker}</p>
+<h3 style="margin: 0; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: clamp(28px, 3vw, 40px); line-height: 1.05">${v.sel.title}</h3>
+</div>
+</div>
+<p style="margin: 0; font-size: 18px; line-height: 1.65">${v.sel.text}</p>
+${v.hasCard ? html`<div style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px"><p style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.12em">EJEMPLO DE MEJORA</p><div class="tree-card ${v.cardAnim}" style="width: 100%; box-sizing: border-box; background: ${v.selCard.bg}; color: #fff6e6; border-radius: 18px; padding: 18px 20px 14px; display: flex; flex-direction: column; gap: 6px"><p style="margin: 0; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: ${v.selCard.catColor}">${v.selCard.cat}</p><p style="margin: 0; font-family: 'Archivo Black', sans-serif; font-size: 26px; line-height: 1.05">${v.selCard.name}</p><p style="margin: 0 0 4px; font-size: 14px; color: #ffe0a8">${v.selCard.lv}</p>${(v.selCard.lines||[]).map((ln, $index) => html`<p style="margin: 0; font-size: 15px; line-height: 1.4; font-weight: 600">${ln}</p>`)}${v.selCard.hasReq ? html`<p style="margin: 8px 0 0; font-size: 13px; color: #ffe0a8; opacity: .9">${v.selCard.req}</p>` : null}<div style="display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 8px; background: rgba(0,0,0,.32); border-radius: 12px; min-height: 52px; padding: 0 16px">${v.selCard.hasIcon ? html`<img src=${v.selCard.costIcon} alt="" style="width: 30px; height: 30px; object-fit: contain; display: block" />` : null}<span style="font-family: 'Archivo Black', sans-serif; font-size: 24px">${v.selCard.cost}</span></div></div><div style="display: flex; gap: 6px; justify-content: center">${(v.cardDots||[]).map((dt, $index) => html`<button type="button" onClick=${dt.pick} aria-label=${dt.label} aria-pressed=${dt.pressed} class="card-dot ${dt.cls}" style="width: 44px; height: 44px; padding: 0; border: 0; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center"><span style="width: 10px; height: 10px; border-radius: 50%; border: 2px solid #1d1b1a; display: block"></span></button>`)}</div></div>` : null}
+</div>
+</div>
+</div>
+</section>
+
+<section id="ficha" style="max-width: 1600px; margin: 0 auto; padding: 88px 24px 24px">
+<div style="display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start; border-top: 3px solid #1d1b1a; padding-top: 40px">
+<div style="flex: 1 1 280px">
+<p style="margin: 0 0 10px; font-size: 14px; font-weight: 600; letter-spacing: 0.12em; color: #c4470f">ESPECIFICACIONES</p>
+<h2 style="margin: 0 0 16px; font-family: 'Archivo Black', sans-serif; font-weight: 400; font-size: clamp(36px, 5vw, 60px); line-height: 1">Ficha técnica</h2>
+<p style="margin: 0; font-size: 16px; line-height: 1.6">Todo lo que necesitás saber antes de encenderlo.</p>
+</div>
+<table style="flex: 2 1 480px; border-collapse: collapse; background: #fbf5e8; border: 3px solid #1d1b1a; font-size: 16px">
+<tbody>
+<tr><th scope="row" style="text-align: left; padding: 14px 18px; border-bottom: 1px solid #1d1b1a; border-right: 1px solid #1d1b1a; width: 40%; font-weight: 600">MESAS</th><td style="padding: 14px 18px; border-bottom: 1px solid #1d1b1a">4 · Ruleta, Tablero, Pesca, Ejército</td></tr>
+<tr><th scope="row" style="text-align: left; padding: 14px 18px; border-bottom: 1px solid #1d1b1a; border-right: 1px solid #1d1b1a; width: 40%; font-weight: 600">MONEDAS</th><td style="padding: 14px 18px; border-bottom: 1px solid #1d1b1a">Oro, doblones, billetes, fichas, tickets</td></tr>
+<tr><th scope="row" style="text-align: left; padding: 14px 18px; border-bottom: 1px solid #1d1b1a; border-right: 1px solid #1d1b1a; width: 40%; font-weight: 600">PROGRESIÓN</th><td style="padding: 14px 18px; border-bottom: 1px solid #1d1b1a">Árbol de cada mesa, árbol global con Dopamina y prestigio</td></tr>
+<tr><th scope="row" style="text-align: left; padding: 14px 18px; border-bottom: 1px solid #1d1b1a; border-right: 1px solid #1d1b1a; width: 40%; font-weight: 600">PLATAFORMA</th><td style="padding: 14px 18px; border-bottom: 1px solid #1d1b1a">Navegador (HTML5) · Unity</td></tr>
+<tr><th scope="row" style="text-align: left; padding: 14px 18px; border-bottom: 1px solid #1d1b1a; border-right: 1px solid #1d1b1a; width: 40%; font-weight: 600">ESTADO</th><td style="padding: 14px 18px; border-bottom: 1px solid #1d1b1a">En desarrollo</td></tr>
+<tr><th scope="row" style="text-align: left; padding: 14px 18px; border-right: 1px solid #1d1b1a; width: 40%; font-weight: 600">PRECIO</th><td style="padding: 14px 18px">Gratis</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<footer ref=${v.footRef} style="position: relative; margin-top: auto; display: flex; flex-direction: column; background: #efe6d4">
+<div aria-hidden="true" style="position: absolute; inset: 0; z-index: 1; pointer-events: none; container-type: inline-size">${(v.stickers||[]).map((st, $index) => html`<img src=${st.src} alt="" draggable="false" ref=${st.ref} onPointerDown=${st.down} class="sticker" style="position: absolute; left: 0; top: 0; width: calc(${st.w} * var(--stk, 1.33)); height: auto; transform: ${st.tf}; pointer-events: auto; cursor: grab; touch-action: none; user-select: none" />`)}</div>
+<div style="position: relative; z-index: 2; max-width: 1600px; margin: 0 auto; padding: 96px 24px clamp(180px, 22vw, 400px); display: flex; flex-direction: column; align-items: center; gap: 24px; text-align: center; pointer-events: none">
+<p style="margin: 0; font-size: 15px; font-weight: 600; letter-spacing: 0.08em; pointer-events: auto">> ¿JUGAR OTRA RONDA? [S/N]</p>
+<a href="https://tamara1001.itch.io/dopaminemaxxing" style="display: inline-flex; align-items: center; min-height: 80px; padding: 0 52px; background: #e8641e; color: #1d1b1a; font-family: 'Archivo Black', sans-serif; font-size: 34px; text-decoration: none; border: 3px solid #1d1b1a; box-shadow: 0 8px 0 #1d1b1a; pointer-events: auto" class="press">JUGAR</a>
+<p style="margin: 0; font-size: 14px; pointer-events: auto">Gratis en itch.io · En desarrollo</p>
+</div>
+<div class="stripes-h" aria-hidden="true" style="position: relative; z-index: 0; height: 32px"></div>
+</footer>
+
+</div>`;
+}
+}
+render(h(Component, null), document.getElementById('app'));
+</script>
+</body>
+</html>
