@@ -58,11 +58,6 @@ python -m http.server
 ```
 
 Y entrá a la dirección que muestra la terminal.
-
-## Deploy
-
-El sitio está pensado para [Vercel](https://vercel.com): importá este repositorio como proyecto nuevo y deployá sin configuración adicional. Cada push a la rama principal publica una versión nueva.
-
 ## Créditos
 
 Desarrollado por **Estudio Manteca Games**.
