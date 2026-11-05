@@ -460,14 +460,18 @@ const session = fetch(SESSION_URL).then((r) => r.ok ? r.json() : Promise.reject(
    hasta el primer click o tecla, así que el audio se habilita ahí. El botón del HUD lo silencia
    y la elección se recuerda en este navegador. */
 const SFX = (() => {
-  let ctx = null, master = null, nbuf = null, hissG = null, muted = false;
+  let ctx = null, master = null, nbuf = null, hissG = null, muted = false, iosKick = false;
+  const VOL = 1.6;
   try { muted = localStorage.getItem('dmx-mute') === '1'; } catch (e) {}
   function init() {
     if (ctx) return;
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return;
     ctx = new AC();
-    master = ctx.createGain(); master.gain.value = muted ? 0 : 0.6; master.connect(ctx.destination);
+    master = ctx.createGain(); master.gain.value = muted ? 0 : VOL;
+    /* compresor: deja subir el volumen sin que se sature cuando suenan varias cosas juntas */
+    const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 6;
+    master.connect(comp).connect(ctx.destination);
     nbuf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
     const d = nbuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     /* siseo continuo que sube con la velocidad del scroll */
@@ -476,8 +480,21 @@ const SFX = (() => {
     hissG = ctx.createGain(); hissG.gain.value = 0;
     src.connect(bp).connect(hissG).connect(master); src.start();
   }
-  function unlock() { init(); if (ctx && ctx.state !== 'running') ctx.resume(); }
-  ['pointerdown', 'keydown', 'touchstart'].forEach((ev) => window.addEventListener(ev, unlock, { capture: true, passive: true }));
+  function unlock() {
+    /* iPhone: con la llave de silencio puesta, Web Audio queda mudo salvo que la página
+       se declare como reproducción (audioSession) o arranque un <audio> en el mismo gesto */
+    if (!iosKick) {
+      iosKick = true;
+      try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+      try {
+        const a = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');
+        a.setAttribute('playsinline', ''); a.volume = 0; const p = a.play(); if (p) p.catch(() => {});
+      } catch (e) {}
+    }
+    init();
+    if (ctx && ctx.state !== 'running') ctx.resume().catch(() => {});
+  }
+  ['pointerdown', 'mousedown', 'touchend', 'keydown', 'click'].forEach((ev) => window.addEventListener(ev, unlock, { capture: true, passive: true }));
   const live = () => ctx && ctx.state === 'running' && !muted;
   function tone(o) {
     const t = ctx.currentTime + (o.t || 0), dur = o.dur || 0.08;
@@ -536,13 +553,19 @@ const SFX = (() => {
     stat() { noise({ f: 3000, q: 0.4, dur: 0.38, vol: 0.12 }); tone({ f: 60, type: 'sawtooth', dur: 0.2, vol: 0.04 }); }
   };
   return {
-    play(k, ...a) { if (live() && S[k]) S[k](...a); },
+    play(k, ...a) {
+      if (!ctx || muted || !S[k]) return;
+      if (ctx.state === 'running') { S[k](...a); return; }
+      /* el primer click crea el audio y tarda unos ms en arrancar: el sonido de ese click no se pierde */
+      if (navigator.userActivation && !navigator.userActivation.isActive) return;
+      ctx.resume().then(() => { if (live()) S[k](...a); }).catch(() => {});
+    },
     hiss(en) { if (!hissG || !ctx) return; hissG.gain.setTargetAtTime(muted ? 0 : Math.min(1, en) * 0.07, ctx.currentTime, 0.05); },
     get muted() { return muted; },
     setMuted(m) {
       muted = m;
       try { localStorage.setItem('dmx-mute', m ? '1' : '0'); } catch (e) {}
-      if (master) master.gain.setTargetAtTime(m ? 0 : 0.6, ctx.currentTime, 0.02);
+      if (master) master.gain.setTargetAtTime(m ? 0 : VOL, ctx.currentTime, 0.02);
       if (!m) { unlock(); setTimeout(() => S.blip && live() && S.blip(), 30); }
     }
   };
