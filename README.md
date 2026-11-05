@@ -38,6 +38,9 @@ Landing estática con dirección de arte retro: toda la página se ve dentro de 
 - Dados y ruleta interactivos, monedas para juntar en los costados y luces del color de cada mesa
 - Árbol de mejoras que crece como una red neuronal, con ejemplos de mejoras reales del juego
 - Footer con íconos que caen con gravedad y se pueden agarrar y tirar
+- Íconos del juego cayendo despacio en el fondo del hero y del pitch (decorativos)
+- Sonidos sintetizados con Web Audio (arranque, botones, ticket, dados, ruleta, monedas, cambio de canal y scroll), con botón para silenciar
+- Cursor pixelado retro (flecha y manito)
 - Número de sesión real (contador compartido de [Abacus](https://abacus.jasoncameron.dev))
 - Diseño adaptable a escritorio y celular, con soporte para "reducir movimiento"
 
