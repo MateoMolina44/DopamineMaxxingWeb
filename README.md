@@ -40,6 +40,7 @@ Landing estática con dirección de arte retro: toda la página se ve dentro de 
 - Footer con íconos que caen con gravedad y se pueden agarrar y tirar
 - Íconos del juego cayendo despacio en el fondo del hero y del pitch (decorativos)
 - Sonidos sintetizados con Web Audio (arranque, botones, ticket, dados, ruleta, monedas, cambio de canal y scroll), con botón para silenciar
+- Música ambiente en loop que entra con un fade in largo apenas aparece el hero (`assets/ambient-loop.wav`)
 - Cursor pixelado retro (flecha y manito)
 - Número de sesión real (contador compartido de [Abacus](https://abacus.jasoncameron.dev))
 - Diseño adaptable a escritorio y celular, con soporte para "reducir movimiento"
