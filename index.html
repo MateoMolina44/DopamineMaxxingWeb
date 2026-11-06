@@ -364,9 +364,10 @@ body{margin:0;background:#0a0807}
 
 /* ===================== ronda 25 ===================== */
 /* 1) el embudo palpita: ondas de color más brillante que bajan por las franjas y entran en el logo */
-.drop .pulse-w{transform-box:view-box;animation:dmxpulse 2.4s cubic-bezier(.45,0,.7,1) infinite}
+/* (nombre propio: «dmxpulse» ya es el latido de la estrella roja detrás de las imágenes) */
+.drop .pulse-w{transform-box:view-box;animation:dmxfunnel 2.4s cubic-bezier(.45,0,.7,1) infinite}
 .drop .pulse-w.b{animation-delay:-1.2s}
-@keyframes dmxpulse{from{transform:translateY(-150px)}to{transform:translateY(350px)}}
+@keyframes dmxfunnel{from{transform:translateY(-150px)}to{transform:translateY(350px)}}
 .drop > path{animation:dmxbreathe 2.4s ease-in-out infinite}
 @keyframes dmxbreathe{50%{filter:brightness(1.12) saturate(1.1)}}
 @media (prefers-reduced-motion:reduce){.drop .pulse-w,.drop > path{animation:none}.drop .pulse-w{display:none}}
@@ -395,7 +396,7 @@ body{margin:0;background:#0a0807}
 /* 5) textos con animación según su jerarquía
    1 · títulos de sección (h2): letra por letra, suben con un destello de color
    2 · subtítulos (h3): palabra por palabra
-   3 · etiquetas, encabezados de tabla y el prompt del final: se escriben como en terminal
+   3 · etiquetas, encabezados de tabla y el prompt del final: aparecen suave, enteros
    4 · párrafos, datos y chips: aparecen suave, de a uno */
 [data-tx] .tch,[data-tx] .twd{display:inline-block}
 [data-tx] .tw{display:inline-block;white-space:nowrap}
@@ -405,10 +406,8 @@ body{margin:0;background:#0a0807}
 [data-tx="2"] .twd{opacity:0;transform:translateY(55%)}
 [data-tx="2"][data-in] .twd{animation:dmxtx2 .5s cubic-bezier(.2,.8,.2,1) calc(var(--i) * 55ms) both}
 @keyframes dmxtx2{0%{opacity:0;transform:translateY(55%);text-shadow:3px 0 #e8641e}100%{opacity:1;transform:none}}
-[data-tx="3"] .tch{visibility:hidden}
-[data-tx="3"][data-in] .tch{animation:dmxtx3 0s linear calc(var(--i) * 30ms) both}
-@keyframes dmxtx3{from{visibility:hidden}to{visibility:visible}}
-[data-tx="3"][data-typing]::after{content:"▌";display:inline-block;margin-left:.15em;animation:dmxblink .7s steps(1) infinite}
+[data-tx="3"]{opacity:0;transform:translateY(.4em)}
+[data-tx="3"][data-in]{opacity:1;transform:none;transition:opacity .5s ease,transform .5s cubic-bezier(.2,.8,.2,1)}
 [data-tx="4"] .twd{opacity:0;transform:translateY(.45em)}
 [data-tx="4"][data-in] .twd{animation:dmxtx4 .45s cubic-bezier(.2,.8,.2,1) calc(var(--d) + var(--i) * 14ms) both}
 @keyframes dmxtx4{0%{opacity:0;transform:translateY(.45em);filter:blur(2px)}100%{opacity:1;transform:none;filter:none}}
@@ -1113,10 +1112,12 @@ window.addEventListener('dmx:mounted', () => {
   for (let i = 0; i < NF; i++) {
     const left = i % 2 === 0;
     const size = Math.round((narrow ? 24 : 30) + Math.random() * (narrow ? 12 : 20));
-    const x = left ? 7.5 + Math.random() * 2.5 : 92.5 - Math.random() * 2.5;   /* % del ancho: el borde visible arranca cerca del 7,5% */
+    /* el borde visible del tubo está a --bleed del borde de la imagen: quedan siempre a un margen fijo de ahí,
+       así no se cortan contra el marco ni con la rotación ni en las esquinas redondeadas */
+    const gap = 'var(--bleed) + clamp(64px, 6.5vw, 120px) + ' + Math.round(Math.random() * 24) + 'px';
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'flo'; b.setAttribute('aria-label', 'Juntar moneda');
-    b.style.left = left ? x + '%' : 'calc(' + x + '% - ' + size + 'px)';
+    b.style.left = left ? 'calc(' + gap + ')' : 'calc(100% - (' + gap + ') - ' + size + 'px)';
     b.style.width = size + 'px';
     b.style.setProperty('--bt', (2.4 + Math.random() * 2.6).toFixed(2) + 's');
     b.style.setProperty('--r0', (-18 + Math.random() * 12).toFixed(0) + 'deg');
@@ -1219,7 +1220,6 @@ window.addEventListener('dmx:mounted', () => {
       const lvl = el.dataset.tx;
       if (lvl === '1') split(el, true);
       else if (lvl === '2') split(el, false);
-      else if (lvl === '3') el.dataset.n = split(el, true);
       else if (lvl === '4') split(el, false);
     });
     /* los de nivel 4 entran escalonados dentro de su bloque */
@@ -1234,10 +1234,6 @@ window.addEventListener('dmx:mounted', () => {
         if (!e.isIntersecting) return;
         const el = e.target; io.unobserve(el);
         el.dataset.in = '';   /* atributos data-: Preact no los pisa al volver a dibujar */
-        if (el.dataset.tx === '3') {   /* cursor de terminal mientras se escribe */
-          el.dataset.typing = '';
-          setTimeout(() => delete el.dataset.typing, (+el.dataset.n || 10) * 30 + 500);
-        }
       });
     }, { threshold: 0.15, rootMargin: '0px 0px -6% 0px' });
     items.forEach((el) => io.observe(el));
@@ -1274,8 +1270,8 @@ window.addEventListener('dmx:mounted', () => {
        el ancho se reparte en franjas parejas y la altura de cada uno sale de la proporción áurea */
     const small = sc.clientWidth < 700;
     const LAYERS = small
-      ? [{ n: 8, s: [20, 28], d: 96 }, { n: 7, s: [30, 40], d: 74 }, { n: 5, s: [42, 54], d: 56 }]
-      : [{ n: 14, s: [30, 42], d: 100 }, { n: 12, s: [46, 62], d: 78 }, { n: 9, s: [66, 86], d: 58 }];
+      ? [{ n: 16, s: [20, 28], d: 96 }, { n: 14, s: [30, 40], d: 74 }, { n: 10, s: [42, 54], d: 56 }]
+      : [{ n: 28, s: [30, 42], d: 100 }, { n: 24, s: [46, 62], d: 78 }, { n: 18, s: [66, 86], d: 58 }];
     const shuffle = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
     let bag = [];
     const nextIcon = () => { if (!bag.length) bag = shuffle(ICONS.slice()); return bag.pop(); };   /* sin repetir hasta usar todos */
