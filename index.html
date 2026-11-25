@@ -557,15 +557,16 @@ const session = fetch(SESSION_URL).then((r) => r.ok ? r.json() : Promise.reject(
 const SFX = (() => {
   let ctx = null, master = null, out = null, nbuf = null, hissG = null, muted = false, iosKick = false;
   /* JERARQUÍA SONORA: cuánto pesa cada sonido según la importancia del elemento (multiplica su volumen propio)
-     1 · momentos clave ............ JUGAR, el logo que aterriza, el encendido de la tele
+     (la intro es muda a propósito: solo suena el tipeo de la terminal)
+     1 · momento clave ............. JUGAR
      2 · interacciones principales . dados, ruleta, abrir/cerrar el ticket, pasar al pitch
-     3 · respuestas chicas ......... links del menú y del pitch, monedas, imágenes, nodos y botones menores
-     4 · ambiente ................... terminal, intro de colores, interferencia del diagrama, siseo del scroll */
+     3 · respuestas chicas ......... click de botones y links, links del menú y del pitch, monedas, imágenes
+     4 · ambiente ................... terminal, hover de botones, interferencia del diagrama, siseo del scroll */
   const LEVEL = {
-    start: 1, slam: 0.9, on: 0.75, flash: 0.6,
+    start: 1,
     dice: 0.8, wheel: 0.8, print: 0.7, retract: 0.65, printQuick: 0.6, retractQuick: 0.6, stat: 0.65,
-    nav: 0.55, coin: 0.55, zoomIn: 0.5, zoomOut: 0.4, blip: 0.4, beep: 0.4, printIn: 0.45,
-    drop: 0.4, rise: 0.3, tick: 0.25, zap: 0.22
+    nav: 0.55, coin: 0.55, click: 0.5, zoomIn: 0.5, zoomOut: 0.4,
+    hover: 0.3, tick: 0.25, zap: 0.22
   };
   const VOL = 1.6;
   try { muted = localStorage.getItem('dmx-mute') === '1'; } catch (e) {}
@@ -655,40 +656,17 @@ const SFX = (() => {
   function clack(t0, vol) { noise({ f: 3200, q: 1.2, dur: 0.035, vol, t: t0 }); tone({ f: 900, f2: 500, dur: 0.03, vol: vol * 0.25, t: t0 }); }
   const S = {
     /* arranque */
-    flash() { tone({ f: 120, f2: 55, type: 'sawtooth', dur: 0.28, vol: 0.03 }); noise({ f: 900, q: 0.6, dur: 0.22, vol: 0.025 }); },
     tick() { noise({ f: 4200, q: 3, dur: 0.012, vol: 0.035 }); },
-    beep() { tone({ f: 988, dur: 0.14, vol: 0.05 }); },
-    on() {
-      noise({ ft: 'lowpass', f: 400, dur: 0.18, vol: 0.13 });                         /* golpe del relé */
-      tone({ f: 70, f2: 40, type: 'sine', dur: 0.5, vol: 0.1 });                       /* zumbido del tubo */
-      noise({ f: 2500, f2: 6000, q: 0.5, dur: 0.6, vol: 0.025, t: 0.05 });             /* estática */
-      tone({ f: 7800, type: 'sine', dur: 1.4, vol: 0.005, a: 0.2, t: 0.1 });            /* chillido agudo del fly-back */
-    },
-    /* intro de colores: sube el amarillo, cae el embudo y aterriza el logo */
-    rise() { tone({ f: 110, f2: 880, type: 'triangle', dur: 1.25, vol: 0.07, a: 0.3 }); noise({ f: 500, f2: 4000, q: 0.7, dur: 1.2, vol: 0.05, a: 0.5 }); },
-    /* el arcoíris cae dentro del logo: un acorde de seis voces (una por franja de color) que se desliza
-       dos octavas hacia abajo, con un soplido que se va cerrando y un brillo que se apaga al principio */
-    drop() {
-      [1319, 1175, 988, 880, 740, 659].forEach((f, i) => {
-        tone({ f, f2: f / 4, type: 'triangle', dur: 1.2 - i * 0.03, vol: 0.032, a: 0.18, t: i * 0.035 });
-        tone({ f: f * 1.005, f2: f / 4.02, type: 'sine', dur: 1.1, vol: 0.02, a: 0.2, t: i * 0.035 });   /* voz gemela, apenas desafinada */
-      });
-      noise({ ft: 'lowpass', f: 7000, f2: 260, q: 0.9, dur: 1.25, vol: 0.07, a: 0.3 });               /* soplido que cae */
-      [2637, 3136, 3520].forEach((f, i) => tone({ f, type: 'sine', dur: 0.35, vol: 0.012, t: 0.05 + i * 0.07 }));   /* destello inicial */
-    },
-    slam() {
-      noise({ ft: 'lowpass', f: 260, dur: 0.45, vol: 0.5 });                              /* golpe */
-      tone({ f: 82, f2: 30, type: 'sine', dur: 1.1, vol: 0.4, a: 0.006 });                /* sub grave que cae */
-      const s0 = ctx.currentTime, os = ctx.createOscillator(), lp = ctx.createBiquadFilter(), g = ctx.createGain();
-      os.type = 'sawtooth'; os.frequency.setValueAtTime(65, s0); os.frequency.exponentialRampToValueAtTime(41, s0 + 0.9);
-      lp.type = 'lowpass'; lp.frequency.setValueAtTime(900, s0); lp.frequency.exponentialRampToValueAtTime(140, s0 + 0.9);
-      g.gain.setValueAtTime(0.0001, s0); g.gain.exponentialRampToValueAtTime(0.16, s0 + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, s0 + 1);
-      os.connect(lp).connect(g).connect(out || master); os.start(s0); os.stop(s0 + 1.05);             /* cuerpo áspero */
-      [131, 196, 262, 330, 392].forEach((f, i) => tone({ f, type: 'triangle', dur: 1.1 - i * 0.08, vol: 0.05, a: 0.01, t: 0.03 + i * 0.02 }));
-      [523, 659].forEach((f, i) => tone({ f, dur: 0.5, vol: 0.02, t: 0.08 + i * 0.03 }));   /* brillo arriba */
-    },
     /* botones */
-    blip() { tone({ f: 620, f2: 940, dur: 0.06, vol: 0.06 }); },
+    /* pasar el mouse: un tic corto de perilla, apenas distinto cada vez */
+    hover() { const f = 2100 + Math.random() * 300; tone({ f, f2: f * 1.25, dur: 0.028, vol: 0.03 }); noise({ ft: 'highpass', f: 5000, dur: 0.015, vol: 0.02 }); },
+    /* click: botón de tele que se hunde (golpe seco + clack + chispa aguda) */
+    click() {
+      noise({ ft: 'lowpass', f: 1400, dur: 0.035, vol: 0.14 });
+      tone({ f: 190, f2: 85, type: 'triangle', dur: 0.07, vol: 0.09 });
+      tone({ f: 1320, f2: 1760, dur: 0.035, vol: 0.035, t: 0.012 });
+      noise({ f: 3600, q: 2, dur: 0.02, vol: 0.05, t: 0.045 });   /* el botón que vuelve */
+    },
     start() { [523, 659, 784, 1047].forEach((f, i) => tone({ f, dur: i === 3 ? 0.35 : 0.11, vol: 0.11, t: i * 0.065 })); tone({ f: 131, type: 'triangle', dur: 0.45, vol: 0.08, t: 0.2 }); },
     nav() { tone({ f: 700, f2: 1050, dur: 0.07, vol: 0.07 }); tone({ f: 1400, dur: 0.05, vol: 0.025, t: 0.05 }); },
     /* imagen ampliada: sube al abrir, baja al cerrar */
@@ -700,12 +678,6 @@ const SFX = (() => {
       motor(0, 0.72, 55, 55, 0.07); clack(0.72, 0.12); clack(0.79, 0.07);
       motor(1.01, 0.62, 55, 55, 0.07); clack(1.63, 0.12); clack(1.70, 0.07);
       motor(1.92, 0.48, 50, 16, 0.07);
-    },
-    /* entrada del ticket al cargar (1,5 s): mismos cortes que la animación */
-    printIn() {
-      motor(0, 0.42, 55, 55, 0.065); clack(0.42, 0.11); clack(0.45, 0.06);
-      motor(0.48, 0.39, 55, 55, 0.065); clack(0.87, 0.11); clack(0.9, 0.06);
-      motor(0.93, 0.33, 50, 16, 0.065); clack(1.26, 0.05);
     },
     /* cerrar (1 s, arranca y frena): el mismo motor, al ritmo de la animación */
     retract() { motor(0, 0.5, 18, 70, 0.07); motor(0.5, 0.5, 70, 18, 0.07); },
@@ -776,7 +748,7 @@ const SFX = (() => {
       try { localStorage.setItem('dmx-mute', m ? '1' : '0'); } catch (e) {}
       if (master) master.gain.setTargetAtTime(m ? 0 : VOL, ctx.currentTime, 0.02);
       if (musicG) { musicG.gain.cancelScheduledValues(ctx.currentTime); musicG.gain.setTargetAtTime(m ? 0.0001 : MUSIC_VOL, ctx.currentTime, m ? 0.05 : 0.6); }
-      if (!m) { unlock(); setTimeout(() => { this.play('blip'); startMusic(); }, 30); }
+      if (!m) { unlock(); setTimeout(() => { this.play('click'); startMusic(); }, 30); }
     }
   };
 })();
@@ -791,13 +763,23 @@ sndBtn.addEventListener('click', () => { SFX.setMuted(!SFX.muted); paintSnd(); }
 window.addEventListener('dmx:sndchange', paintSnd);
 window.addEventListener('dmx:sfx', (e) => SFX.play(e.detail));
 window.addEventListener('dmx:collect', () => SFX.play('coin'));
-/* botones y links: un blip (JUGAR tiene su propio sonido; dados, ruleta, ticket y monedas suenan por su cuenta) */
+/* hover: un tic al entrar con el mouse a cualquier botón o link (no en pantallas táctiles) */
+const HOVERABLE = 'a,button,[role="button"],summary,label[for],.hit,.psst,.flo,.tree-node,.card-dot';
+let hoverT = 0;
+document.addEventListener('pointerover', (e) => {
+  if (e.pointerType !== 'mouse') return;
+  const el = e.target.closest && e.target.closest(HOVERABLE);
+  if (!el || (e.relatedTarget && el.contains(e.relatedTarget))) return;
+  const n = performance.now(); if (n - hoverT < 40) return; hoverT = n;
+  SFX.play('hover');
+});
+/* botones y links: un click (JUGAR tiene su propio sonido; dados, ruleta, ticket y monedas suenan por su cuenta) */
 document.addEventListener('click', (e) => {
   const el = e.target.closest && e.target.closest('a,button');
   if (!el || el.id === 'sndBtn' || el.matches('.hit,.psst,.flo,.rcpt-tab,.pw-btn,.pw-mute,.lb-close')) return;
   if (el.closest('.hero-cta')) SFX.play('start');
   else if (el.matches('.rcpt-link,.pp-btn,.pp-back,.who')) SFX.play('nav');
-  else SFX.play('blip');
+  else SFX.play('click');
 });
 
 /* ---- ruido de la imagen ---- */
@@ -841,7 +823,6 @@ async function boot() {
   crt.classList.remove('off');
   crt.classList.add('booting');
   term.classList.add('blue');
-  SFX.play('flash');
   await wait(260);
   term.classList.remove('blue');
   const sess = await Promise.race([session, wait(250).then(() => '------')]);
@@ -914,11 +895,9 @@ async function boot() {
   const last = document.createElement('p');
   last.className = 'ln go'; last.innerHTML = '&gt; INICIANDO SIMULACIÓN<span class="cur">_</span>';
   term.appendChild(last);
-  SFX.play('beep');
   if (term.scrollHeight > term.clientHeight) term.classList.add('full');
   await wait(1000);   /* "> INICIANDO SIMULACIÓN" queda 1 s en pantalla */
   crt.classList.add('switch');
-  SFX.play('on');            // el tubo se cierra en una línea y se vuelve a abrir
   await wait(380);
   crt.classList.remove('booting');
   mount();
@@ -935,10 +914,6 @@ window.addEventListener('dmx:mounted', () => {
     crt.classList.add('yellow');
     requestAnimationFrame(() => introSides());
     setTimeout(() => crt.classList.remove('yellow'), 1300);   /* la intro se desvanece entre 1,3 y 1,6 s: la capa se va con ella */
-    setTimeout(() => SFX.play('rise'), 0);
-    setTimeout(() => SFX.play('drop'), 1500);
-    setTimeout(() => SFX.play('slam'), 2650);
-    setTimeout(() => SFX.play('printIn'), 4200);
   }
 
   /* curvatura: cada píxel toma el color de un punto un poco más lejos del centro */
